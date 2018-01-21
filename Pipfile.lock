@@ -1,0 +1,58 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "13816c8936d4fe55210f58e056bf34f012924b2584f42b531da68e02d273ecf4"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "3.6.4",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "4.4.0-77-generic",
+            "platform_system": "Linux",
+            "platform_version": "#98-Ubuntu SMP Wed Apr 26 08:34:02 UTC 2017",
+            "python_full_version": "3.6.4",
+            "python_version": "3.6",
+            "sys_platform": "linux"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.6"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "dj-database-url": {
+            "hashes": [],
+            "version": "==0.4.2"
+        },
+        "django": {
+            "hashes": [],
+            "version": "==2.0.1"
+        },
+        "gunicorn": {
+            "hashes": [],
+            "version": "==19.7.1"
+        },
+        "psycopg2": {
+            "hashes": [],
+            "version": "==2.7.3.2"
+        },
+        "pytz": {
+            "hashes": [],
+            "version": "==2017.3"
+        },
+        "whitenoise": {
+            "hashes": [],
+            "version": "==3.3.1"
+        }
+    },
+    "develop": {}
+}
