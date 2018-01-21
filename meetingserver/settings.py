@@ -58,7 +58,7 @@ ROOT_URLCONF = 'meetingserver.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # PROJECT_ROOT to by było /meetingserver/meetingserver
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

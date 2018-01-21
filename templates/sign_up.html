@@ -1,0 +1,21 @@
+
+
+
+<form action="/sign_up" method="post">
+    {% csrf_token %}
+    {% if form.errors %}
+    <p style="color: red;">
+        Formularz zawiera błędy: {{ form.errors| pluralize }}
+    </p>
+    {% endif %}
+    <table> 
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Utwórz konto"/>
+</form>
+
+<hr>
+
+<form method="get" action="">
+    <button type="submit">Wróć na stronę główną</button>
+</form>
