@@ -5,7 +5,11 @@
     {% csrf_token %}
     {% if form.errors %}
     <p style="color: red;">
-        Formularz zawiera błędy: {{ form.errors| pluralize }}
+        Formularz zawiera błędy <!-- {{ form.errors  }} WYPISUJE NAZWĘ POLA, A NIE ETYKIETĘ, KTO TO PISAŁ-->
+        
+        <!-- {% for error in form.errors %}
+            <li>{{error|escape}}</li>    WYPISUJE TYLKO NAZWĘ POLA, A NIE ETYKIETĘ, KTO TO PISAŁ
+        {% endfor %} -->
     </p>
     {% endif %}
     <table> 

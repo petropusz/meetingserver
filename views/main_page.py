@@ -6,6 +6,7 @@ from django.template import RequestContext
 from meetingserver.models import User
 from forms.login_form import LoginForm
 from forms.new_user_form import NewUserForm
+from django import forms
 
 from django.views.decorators.csrf import csrf_protect
 
@@ -24,6 +25,7 @@ def get_main_page(request):
             request.session['user_id'] = form.cleaned_data['id'] #request.POST['id']  #do sprawdzania czy zalogowany 
             request.session['user_name'] = form.cleaned_data['name'] #request.POST['name']
             return HttpResponseRedirect("/me") #HttpResponse("udało się")
+        form.fields['new_field'] = forms.CharField(max_length=50)  # W TEN SPOSÓB MOŻNA ZROBIĆ SUPERDYNAMICZNY FORMULARZ DO WYDARZEŃ!!!!
     else:
         form = LoginForm()
     #c['form'] = form    
