@@ -18,11 +18,14 @@ from django.contrib import admin
 from django.urls import path
 
 from views import main_page
+from views import logged_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_page.get_main_page),
-    path('sign_up', main_page.sign_up)
+    path('sign_up', main_page.sign_up),
+    path('sign_out', main_page.sign_out),
+    path('me', logged_views.me)
 ]
 
 

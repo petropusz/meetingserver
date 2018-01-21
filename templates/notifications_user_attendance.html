@@ -1,0 +1,15 @@
+
+<h4>Nowe reakcje użytkowników na Twoje prozpozycje spotkań: </h4>
+<div>
+    {% for inv in new_attendance %}
+        {% 
+        try:
+            s = inv.meeting.name
+            begin = inv.meeting.begin
+            end = inv.meeting.end
+            u = inv.user.name
+            what = inv.attendanceType
+        %}
+        <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, użytkownik {{ u }} chce {{ what }} </p>
+    {% endfor %}
+</div>

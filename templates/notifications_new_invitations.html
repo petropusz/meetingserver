@@ -1,0 +1,14 @@
+
+<h4>Nowe zaproszenia na spotkania: </h4>
+<div>
+    {% for inv in new_inv %}
+        {% 
+        try:
+            s = inv.meeting.name
+            begin = inv.meeting.begin
+            end = inv.meeting.end
+            creator = inv.meeting.creator.name
+        %}
+        <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, utworzone przez {{ creator }} </p>
+    {% endfor %}
+</div>

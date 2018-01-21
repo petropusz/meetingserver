@@ -39,11 +39,11 @@ class NewUserForm(forms.Form):
             
             
         try:
-            User.objects.create(name=n, pwd=p1)
+            u = User.objects.create(name=n, pwd=p1)
         except:
             raise forms.ValidationError('Nazwa użytkownika jest zajęta') # tutaj dodajemy bo inaczej użytkownikowi mogłyby przepaść wypełnione dane
                                                                          # jeśli dwóch by chciało ten sam login w tym samym czasie, oba formularze by przeszły a potem kuku
                                                                          # tudzież login; a może chce tylko dopisać '1234'    
             
-        return {'name': n } # zwracamy już bez hasła, bo się nim zajęliśmy
+        return {'id': u.id, 'name': n } # zwracamy już bez hasła, bo się nim zajęliśmy
         
