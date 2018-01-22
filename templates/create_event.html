@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
 
 <center>
-<form action="/sign_up" method="post">
+<form action="/create_event" method="post">
     {% csrf_token %}
     {% if form.errors %}
     <p style="color: red;">
@@ -16,9 +16,11 @@
     <div class="form-group">
     <table> 
         {{ form.as_table }}
+        <button type="submit" formaction="/create_event/add_user_field" >Dodaj pole na użytkownika</button>
+        <button type="submit" formaction="/create_event/del_user_field" >Usuń pole na użytkownika</button>
     </table>
     </div>
-    <input type="submit" value="Utwórz konto"/>
+    <input type="submit" value="Utwórz wydarzenie"/>
 </form>
 
 <hr>

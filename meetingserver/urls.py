@@ -25,7 +25,10 @@ urlpatterns = [
     path('', main_page.get_main_page),
     path('sign_up', main_page.sign_up),
     path('sign_out', main_page.sign_out),
-    path('me', logged_views.me)
+    path('me', logged_views.me),
+    path('create_event', logged_views.create_event),
+    path('create_event/add_user_field', logged_views.add_user_field),
+    path('create_event/del_user_field', logged_views.delete_user_field)
 ]
 
 

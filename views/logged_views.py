@@ -8,7 +8,7 @@ from meetingserver.models import InviteInfo
 from meetingserver.models import ChangedInviteInfo
 from meetingserver.models import CreatorAttendanceInfo
 from forms.login_form import LoginForm
-from forms.new_user_form import NewUserForm
+from forms.new_event_form import NewEventForm
 
 from django.views.decorators.csrf import csrf_protect
 
@@ -28,14 +28,103 @@ def me(request):
     new_changed_invite = ChangedInviteInfo.objects.filter(user__id=myid)
     new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
     
-    return render(request, 'me.html', {'username': uname, 'new_inv': new_invite, 'new_changed': new_changed_invite, \
-                                        'new_attendance': new_attendance}) 
+    u1 = set()
+    for inv in new_invite:
+        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
+        u1.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
+        
+    u2 = set()
+    for inv in new_changed_invite:
+        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
+        u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
+        
+    u3 = set()
+    for inv in new_attendance:
+        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
+        u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+    
+    return render(request, 'me.html', {'username': uname, 'new_inv': u1, 'new_changed': u2, \
+                                        'new_attendance': u3}) 
     
 
+def create_event(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    if 'ev_us_nr' not in request.session:
+        request.session['ev_us_nr']=1    
+        
+    if request.method == 'POST':
+        form = NewEventForm(request.POST)
+        form.ensure_user_field_nr(request.session['ev_us_nr'])
+        if form.is_valid():  # nic nie robi, potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+                             # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
+                            
+            #data = form.cleaned_data
+            #request.session['logged'] = True
+            form.checkClean(request.session['ev_us_nr'])
+            try:
+                print ("starting event creation")
+                print (";;"+str(request.session['user_id']))
+                form.create_event(request.session['user_id'], request.session['ev_us_nr'])
+                del request.session['ev_us_nr']
+                print ("EVENT CREATED, HM")
+            except:
+                form.checkClean(request.session['ev_us_nr'])
+                return render(request, 'create_event.html', {'form': form})
+            return HttpResponseRedirect("/me") # TODO strona wydarzenia którą zwraca zaakceptowany formularz jako swoje cleaned_data
+    else:
+        form = NewEventForm() # TODO jak to zrobic żeby było ok
+        form.ensure_user_field_nr(request.session['ev_us_nr'])
+    #c['form'] = form    
+    return render(request, 'create_event.html', {'form': form})
+    
+def add_user_field(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    if 'ev_us_nr' not in request.session:
+        request.session['ev_us_nr']=1    
+        
+    request.session['ev_us_nr'] += 1    
+    print (request.session['ev_us_nr'])
+        
+    if request.method == 'POST':
+        form = NewEventForm(request.POST)
+        form.ensure_user_field_nr(request.session['ev_us_nr']) #add_user()
+        
+    else:
+        form = NewEventForm() 
+        form.ensure_user_field_nr(request.session['ev_us_nr'])
+    #c['form'] = form    
+    return render(request, 'create_event.html', {'form': form})
 
 
-
-
+def delete_user_field(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    if 'ev_us_nr' not in request.session:
+        request.session['ev_us_nr']=1    
+        
+    if request.session['ev_us_nr'] > 1:
+        request.session['ev_us_nr'] -= 1   
+        
+    print (request.session['ev_us_nr'])     
+        
+    if request.method == 'POST':
+        form = NewEventForm(request.POST)
+        form.ensure_user_field_nr(request.session['ev_us_nr']) #form.del_user()
+        
+        # użytkownik może sobie dodawać coś do formularza, jakieś dziwne pola (w html), ale będą ignorowane
+    else:
+        form = NewEventForm() 
+        form.ensure_user_field_nr(request.session['ev_us_nr'])
+    #c['form'] = form    
+    return render(request, 'create_event.html', {'form': form})
 
 
 

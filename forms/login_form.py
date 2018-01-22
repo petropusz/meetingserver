@@ -16,5 +16,7 @@ class LoginForm(forms.Form):
         pReal = dane.pwd
         if p != pReal:
             raise forms.ValidationError('Błędne dane logowania')
+            
+        print ("{}{}{}"+str(dane.id))    
         return {'id': dane.id, 'name': n} #obcinamy już niepotrzebne pwd
     

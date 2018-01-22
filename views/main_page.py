@@ -22,10 +22,12 @@ def get_main_page(request):
         if form.is_valid():
             #data = form.cleaned_data
             #request.session['logged'] = True
+            print ("[][][]"+str(form.cleaned_data['id'])) 
             request.session['user_id'] = form.cleaned_data['id'] #request.POST['id']  #do sprawdzania czy zalogowany 
+            print (":"+str(request.session['user_id']))
             request.session['user_name'] = form.cleaned_data['name'] #request.POST['name']
             return HttpResponseRedirect("/me") #HttpResponse("udało się")
-        form.fields['new_field'] = forms.CharField(max_length=50)  # W TEN SPOSÓB MOŻNA ZROBIĆ SUPERDYNAMICZNY FORMULARZ DO WYDARZEŃ!!!!
+        #form.fields['new_field'] = forms.CharField(max_length=50)  # W TEN SPOSÓB MOŻNA ZROBIĆ SUPERDYNAMICZNY FORMULARZ DO WYDARZEŃ!!!!
     else:
         form = LoginForm()
     #c['form'] = form    
@@ -55,6 +57,7 @@ def sign_out(request):
     try:
         del request.session['user_id']
         del request.session['name']
+        del request.session['ev_us_nr']
     except KeyError:
         pass
     return HttpResponse("Wologowano.")
