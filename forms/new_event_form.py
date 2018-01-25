@@ -99,9 +99,9 @@ class NewEventForm(forms.Form):
         #self.fields['end'] = forms.DateTimeField(label="znaleziony koniec", required = False, initial = gap_begin+gap)
         # formularz musi być z kopii POST, żeby .data było mutable!!
         self.data['begin'] = gap_begin
-        self.fields['begin'].label = "znaleziony początek"
+        #self.fields['begin'].label = "znaleziony początek" # jednak nie, bo będzie mylić jak wpisze swój
         self.data['end'] = gap_begin+gap
-        self.fields['end'].label = "znaleziony koniec"
+        #self.fields['end'].label = "znaleziony koniec"
         return True
         
     """ NIE DZIAŁA
@@ -144,9 +144,9 @@ class NewEventForm(forms.Form):
         
         # formularz musi być z kopii POST, żeby .data było mutable!!
         self.data['begin'] = gap_begin
-        self.fields['begin'].label = "znaleziony początek"
+        #self.fields['begin'].label = "znaleziony początek" #jednak nie, bo będzie mylić jak wpisze swój
         self.data['end'] = gap_begin+gap
-        self.fields['end'].label = "znaleziony koniec"
+        #self.fields['end'].label = "znaleziony koniec"
         
         #self.fields['ehh'] = forms.CharField(label="jakie to jest dno to django", required = False, initial = "żałosne") # initial nie działa, bo nie
         #   !!!!   TODO najwyżej wypisać to gdzieś żeby sobie przekleił, jakie to django jest żałosne....
