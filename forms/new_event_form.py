@@ -28,7 +28,7 @@ class NewEventForm(forms.Form):
 
     gapLength = forms.DurationField(label="długość przedziału czasu", required=False)
     name = forms.CharField(label="nazwa", max_length=50, required = False)
-    begin = forms.DateTimeField(label="początek", required = False, initial=datetime.now(pytz.utc))
+    begin = forms.DateTimeField(label="początek", required = False)
     end = forms.DateTimeField(label="koniec", required = False)
     u1 = forms.CharField(label="użytkownik 1", max_length=50, required = False)
     userFieldNr = forms.CharField(widget=forms.HiddenInput(), initial=1)
@@ -94,9 +94,14 @@ class NewEventForm(forms.Form):
             tab.append((p_end, -1))
         print ("::::"+ str(sorted(tab)))
         gap_begin = find_first_gap(gap, sorted(tab))    
-        self.fields['begin'] = forms.DateTimeField(label="znaleziony początek", required = False, initial = gap_begin)
+        #self.fields['begin'] = forms.DateTimeField(label="znaleziony początek", required = False, initial = gap_begin)
         print ("{}{}" + str(gap) + ";" + str(gap_begin) )
-        self.fields['end'] = forms.DateTimeField(label="znaleziony koniec", required = False, initial = gap_begin+gap)
+        #self.fields['end'] = forms.DateTimeField(label="znaleziony koniec", required = False, initial = gap_begin+gap)
+        # formularz musi być z kopii POST, żeby .data było mutable!!
+        self.data['begin'] = gap_begin
+        self.fields['begin'].label = "znaleziony początek"
+        self.data['end'] = gap_begin+gap
+        self.fields['end'].label = "znaleziony koniec"
         return True
         
     """ NIE DZIAŁA
@@ -132,13 +137,20 @@ class NewEventForm(forms.Form):
         print ("[][]" + str(gap) + ";" )  
         gap_begin = find_first_gap(gap, sorted(tab))  
         print ("{}{}" + str(gap) + ";" + str(gap_begin) + str(type(gap_begin)) )  
-        del self.fields['begin']
-        del self.fields['end']
+        #del self.fields['begin']
+        #del self.fields['end']
         #self.fields['begin'] = forms.DateTimeField(label="znaleziony początek", required = False, initial = gap_begin)
         #self.fields['end'] = forms.DateTimeField(label="znaleziony koniec", required = False, initial = gap_begin+gap)
-        self.fields['ehh'] = forms.CharField(label="jakie to jest dno to django", required = False, initial = "żałosne") # initial nie działa, bo nie
+        
+        # formularz musi być z kopii POST, żeby .data było mutable!!
+        self.data['begin'] = gap_begin
+        self.fields['begin'].label = "znaleziony początek"
+        self.data['end'] = gap_begin+gap
+        self.fields['end'].label = "znaleziony koniec"
+        
+        #self.fields['ehh'] = forms.CharField(label="jakie to jest dno to django", required = False, initial = "żałosne") # initial nie działa, bo nie
         #   !!!!   TODO najwyżej wypisać to gdzieś żeby sobie przekleił, jakie to django jest żałosne....
-        del self.initial
+        #del self.initial
         #self.initial = {'begin': gap_begin, 'end': gap_begin+gap}
     #    newform = NewEventForm(initial={'begin': gap_begin, 'end': gap_begin+gap})
         #for field in self.fields:

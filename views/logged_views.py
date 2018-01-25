@@ -58,7 +58,7 @@ def create_event(request):
     if request.method == 'POST':
         form = NewEventForm(request.POST)
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-        if form.is_valid():  # nic nie robi, potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        if form.is_valid():  # nic nie robi (albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
                             
             #data = form.cleaned_data
@@ -77,6 +77,7 @@ def create_event(request):
                 return HttpResponseRedirect("/me") # TODO strona wydarzenia którą zwraca zaakceptowany formularz jako swoje cleaned_data
     else:
         form = NewEventForm() # TODO jak to zrobic żeby było ok
+        request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
     #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
@@ -98,6 +99,7 @@ def add_user_field(request):
         
     else:
         form = NewEventForm() 
+        request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
     #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
@@ -141,10 +143,10 @@ def find_gap_in_plans(request):
     print ("=======" + str(request.session['ev_us_nr']))
         
     if request.method == 'POST':
-        form = NewEventForm(request.POST)
+        form = NewEventForm(request.POST.copy())   # musi być .copy, żeby .data było mutable!!!
         form.ensure_user_field_nr(request.session['ev_us_nr'])   # TO MA ZNACZENIE NA GOTOWYM FORMULARZU, BO FORMULARZ NIBY MA POLA,
                                                                  #  ALE OBIEKT Z KONSTRUKTORA NewEventForm(request.POST) BEZ TEGO ICH NIE MA !!!
-        if form.is_valid():  # nic nie robi, potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
         # !!  jak użytkownik sobie usunie pola w html'u to się może wywalić,
         #     ale raczej nie chcemy się bawić w sprawdzanie czy sam sobie nie szkodzi
@@ -152,6 +154,7 @@ def find_gap_in_plans(request):
             res = form.find_gap_plan(request.session['ev_us_nr'])  # w sumie nieważne jakie res, i tak zwracamy zmieniony formularz (z błędami lub bez)
     else:
         form = NewEventForm() 
+        request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
     #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
@@ -165,14 +168,15 @@ def find_gap_in_invs(request):
         request.session['ev_us_nr']=1    
         
     if request.method == 'POST':
-        form = NewEventForm(request.POST)
+        form = NewEventForm(request.POST.copy())  # musi być .copy, żeby .data było mutable!!!
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-        if form.is_valid():  # nic nie robi, potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
             
             res = form.find_gap_inv(request.session['ev_us_nr'])  # jak zwrócę nowy formularz z wypelnionymi to stracę stare wartości...
     else:
         form = NewEventForm() 
+        request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
     #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
