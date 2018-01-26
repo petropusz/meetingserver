@@ -1,8 +1,17 @@
 
 
 <div class="container">
-    <h4> Nowe zdarzenia </h4>
+    <h3> Nowe zdarzenia </h3>
+    {% if not new_inv and not new_deleted and not new_attendance %}
+    Brak zdarzeń.
+    {% endif %}
+    {% if new_inv %}
     {% include 'notifications_new_invitations.html' %}
+    {% endif %}
+    {% if new_deleted %}
     {% include 'notifications_deleted.html' %}
+    {% endif %}
+    {% if new_attendance %}
     {% include 'notifications_user_attendance.html' %}
+    {% endif %}
 </div>

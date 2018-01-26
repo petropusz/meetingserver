@@ -13,18 +13,7 @@ from forms.new_event_form import NewEventForm
 
 from django.views.decorators.csrf import csrf_protect
 
-def me(request):
-    
-    if 'user_id' not in request.session:
-        return HttpResponseRedirect("/")
-    
-    # żeby obsługa i GET i POST
-    params = request.POST.copy()
-    params.update(request.GET)
-    
-    uname = request.session['user_name']
-    myid = request.session['user_id']
-    
+def get_my_notifications(myid, uname):
     new_invite = InviteInfo.objects.filter(user__id=myid)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     new_deleted = DeletedInfo.objects.filter(user__id=myid)
     new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
@@ -43,9 +32,25 @@ def me(request):
     for inv in new_attendance:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+        
+    return {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
+                                        'new_attendance': u3}
+
+def me(request):
     
-    return render(request, 'me.html', {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
-                                        'new_attendance': u3}) 
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+    
+    # żeby obsługa i GET i POST
+    params = request.POST.copy()
+    params.update(request.GET)
+    
+    uname = request.session['user_name']
+    myid = request.session['user_id']
+    
+    notif_dict = get_my_notifications(myid, uname)
+    
+    return render(request, 'me.html', notif_dict) 
     
 
 def create_event(request):
@@ -214,6 +219,7 @@ def show_event(request):
         return HttpResponseRedirect("/")
 
     print ("HEH")
+    
 
     #meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     i_plan = Plan.objects.filter(meeting__id = event_id)
@@ -244,6 +250,11 @@ def show_event(request):
     
     print ("CZŁEK:" + meeting.creator.name)
     
+    uname = request.session['user_name']
+    myid = request.session['user_id']
+    
+    notif_dict = get_my_notifications(myid, uname)
+    
     info = {'meeting_name': meeting.name,
             'meeting_creator': meeting.creator.name, 
             'meeting_begin': meeting.begin, 
@@ -256,7 +267,7 @@ def show_event(request):
             'n_ign': n_ign, 
             'n_rej': n_rej}
     
-    return render(request, 'show_event.html', info)
+    return render(request, 'show_event.html', {**info, **notif_dict})
 
 
 
