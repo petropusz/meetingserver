@@ -18,9 +18,10 @@
         {% if attendanceType == 4 %} nie zamierza brać udziału {% endif %}
         
         </p>
-        <form action = "{{ "/show_event" }}" method="get" />
+        <form action = "{{ "/show_event" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+            <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
-            <input id="ev_name" name="ev_name" type="hidden" value = {{s}} />
+            <input id="ev_name" name="ev_name" type="hidden" value = "{{s}}" />
         </form>
         
     {% endfor %}

@@ -202,13 +202,13 @@ def show_event(request):
     
     print ("****" + event_name)
     
-    #try:
-    print ("TRYING TO FIND")
-    meeting = Meeting.objects.get(name=event_name)
-    print ("FOUND")
-    event_id = meeting.id
-    #except:
-    #    return HttpResponseRedirect("/")
+    try:
+        print ("TRYING TO FIND")
+        meeting = Meeting.objects.get(name=event_name)
+        print ("FOUND")
+        event_id = meeting.id
+    except:
+        return HttpResponseRedirect("/")
     
     if not event_id:
         return HttpResponseRedirect("/")

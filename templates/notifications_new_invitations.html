@@ -12,8 +12,9 @@
         
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, utworzone przez {{ creator }} </p>
         <form action = "{{ "/show_event" }}" method="get" />
+            <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
-            <input id="ev_name" name="ev_name" type="hidden" value = {{s}} />
+            <input id="ev_name" name="ev_name" type="hidden" value = "{{s}}" />
         </form>
         
     {% endfor %}
