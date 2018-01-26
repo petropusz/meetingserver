@@ -1,7 +1,7 @@
 
 <h4>Nowe zaproszenia na spotkania: </h4>
 <div>
-    {% for s, begin, end, creator in new_inv %}
+    {% for id, s, begin, end, creator in new_inv %}
         <!--{% 
         try:
             s = inv.meeting.name
@@ -14,7 +14,7 @@
         <form action = "{{ "/show_event" }}" method="get" />
             <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
-            <input id="ev_name" name="ev_name" type="hidden" value = "{{s}}" />
+            <input id="ev_id" name="ev_id" type="hidden" value = "{{id}}" />
         </form>
         
     {% endfor %}

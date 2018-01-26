@@ -21,17 +21,17 @@ def get_my_notifications(myid, uname):
     u1 = set()
     for inv in new_invite:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u1.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
+        u1.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
         
     u2 = set()
     for inv in new_deleted:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
+        u2.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
         
     u3 = set()
     for inv in new_attendance:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+        u2.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
         
     return {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
                                         'new_attendance': u3}
@@ -196,22 +196,20 @@ def show_event(request):
      
     print (str(request.GET)) 
      
-    event_name = None 
     event_id = None   
     if request.method == 'POST':
         print ("'''''''''")
-        event_name = request.POST.get('ev_name', '')
+        event_id = request.POST.get('ev_id', '')
     else:
         print ("------------")
-        event_name = request.GET.get('ev_name', '')
+        event_id = request.GET.get('ev_id', '')
     
-    print ("****" + event_name)
+    print ("****" + event_id)
     
     try:
         print ("TRYING TO FIND")
-        meeting = Meeting.objects.get(name=event_name)
+        meeting = Meeting.objects.get(id=event_id)
         print ("FOUND")
-        event_id = meeting.id
     except:
         return HttpResponseRedirect("/")
     
