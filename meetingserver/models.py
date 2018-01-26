@@ -18,7 +18,15 @@ class Plan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     
+class Perhaps(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)    
+    
 class Invitation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    
+class Ignored(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     
@@ -31,7 +39,7 @@ class InviteInfo(models.Model):
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now=True)
 
-class ChangedInviteInfo(models.Model):
+class DeletedInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now=True)

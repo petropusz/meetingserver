@@ -3,10 +3,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response #nie działa z csrf
 from django.shortcuts import render
 from django.template import RequestContext
-from meetingserver.models import User
+from meetingserver.models import User, Meeting
 from meetingserver.models import InviteInfo
-from meetingserver.models import ChangedInviteInfo
+from meetingserver.models import DeletedInfo
 from meetingserver.models import CreatorAttendanceInfo
+from meetingserver.models import Plan, Perhaps, Invitation, Ignored, Rejected
 from forms.login_form import LoginForm
 from forms.new_event_form import NewEventForm
 
@@ -25,7 +26,7 @@ def me(request):
     myid = request.session['user_id']
     
     new_invite = InviteInfo.objects.filter(user__id=myid)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
-    new_changed_invite = ChangedInviteInfo.objects.filter(user__id=myid)
+    new_deleted = DeletedInfo.objects.filter(user__id=myid)
     new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
     
     u1 = set()
@@ -34,7 +35,7 @@ def me(request):
         u1.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
         
     u2 = set()
-    for inv in new_changed_invite:
+    for inv in new_deleted:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
         
@@ -43,7 +44,7 @@ def me(request):
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u2.add((inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
     
-    return render(request, 'me.html', {'username': uname, 'new_inv': u1, 'new_changed': u2, \
+    return render(request, 'me.html', {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
                                         'new_attendance': u3}) 
     
 
@@ -181,10 +182,81 @@ def find_gap_in_invs(request):
     #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
 
+    
 
+def show_event(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+     
+    print (str(request.GET)) 
+     
+    event_name = None 
+    event_id = None   
+    if request.method == 'POST':
+        print ("'''''''''")
+        event_name = request.POST.get('ev_name', '')
+    else:
+        print ("------------")
+        event_name = request.GET.get('ev_name', '')
+    
+    print ("****" + event_name)
+    
+    #try:
+    print ("TRYING TO FIND")
+    meeting = Meeting.objects.get(name=event_name)
+    print ("FOUND")
+    event_id = meeting.id
+    #except:
+    #    return HttpResponseRedirect("/")
+    
+    if not event_id:
+        return HttpResponseRedirect("/")
 
+    print ("HEH")
 
-
+    #meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
+    i_plan = Plan.objects.filter(meeting__id = event_id)
+    n_plan = set()
+    for u in i_plan:
+        print ("A")
+        n_plan.add(u.user.name)
+    i_per = Perhaps.objects.filter(meeting__id = event_id)
+    n_per = set()
+    for u in i_per:
+        print ("B")
+        n_per.add(u.user.name)
+    i_inv = Invitation.objects.filter(meeting__id = event_id)
+    n_inv = set()
+    for u in i_inv:
+        print ("C")
+        n_inv.add(u.user.name)
+    i_ign = Ignored.objects.filter(meeting__id = event_id)
+    n_ign = set()
+    for u in i_ign:
+        print ("D")
+        n_ign.add(u.user.name)
+    i_rej = Rejected.objects.filter(meeting__id = event_id)
+    n_rej = set()
+    for u in i_rej:
+        print ("E")
+        n_rej.add(u.user.name)
+    
+    print ("CZŁEK:" + meeting.creator.name)
+    
+    info = {'meeting_name': meeting.name,
+            'meeting_creator': meeting.creator.name, 
+            'meeting_begin': meeting.begin, 
+            'meeting_end': meeting.end, 
+            'meeting_nr_inv': meeting.invitedNr, 
+            'meeting_nr_yes': meeting.acceptedNr, 
+            'n_plan': n_plan, 
+            'n_per': n_per, 
+            'n_inv': n_inv, 
+            'n_ign': n_ign, 
+            'n_rej': n_rej}
+    
+    return render(request, 'show_event.html', info)
 
 
 

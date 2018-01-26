@@ -1,0 +1,43 @@
+
+{% extends 'logged_shared.html' %}
+
+{% block main_content %}
+
+    <h3> Spotkanie: {{ meeting_name }} </h3>
+
+    wydarzenie utworzone przez: {{ meeting_creator }} <br>
+    początek spotkania:  {{ meeting_begin }} <br>
+    koniec spotkania:  {{ meeting_end }} <br>
+    
+    liczba zaproszonych użytkowników:  {{ meeting_nr_inv }} <br>
+    udział potwierdziło:  {{ meeting_nr_yes }} <br>
+    
+    <hr>
+
+    <h4> Użytkownicy, którzy potwierdzili, że wezmą udział: </h4>
+    {% for user_name in n_plan %}
+        {{ user_name }} <br>
+    {% endfor %}
+    
+    <h4> Użytkownicy, którzy są zainteresowani: </h4>
+    {% for user_name in n_per %}
+        {{ user_name }} <br>
+    {% endfor %}
+    
+    <h4> Użytkownicy, którzy nie zareagowali na zaproszenie: </h4>
+    {% for user_name in n_inv %}
+        {{ user_name }} <br>
+    {% endfor %}
+    
+    <h4> Użytkownicy, którzy zignorowali zaproszenie: </h4>
+    {% for user_name in n_ign %}
+        {{ user_name }} <br>
+    {% endfor %}
+    
+    <h4> Zaproszeni użytkownicy, którzy nie wezmą udziału: </h4>
+    {% for user_name in n_rej %}
+        {{ user_name }} <br>
+    {% endfor %}
+
+{% endblock %}
+

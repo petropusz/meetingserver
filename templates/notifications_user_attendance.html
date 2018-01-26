@@ -1,5 +1,5 @@
 
-<h4>Nowe reakcje użytkowników na Twoje prozpozycje spotkań: </h4>
+<h4>Nowe reakcje użytkowników na Twoje propozycje spotkań: </h4>
 <div>
     {% for s, begin, end, attendanceType in new_attendance %}
         <!--{% 
@@ -13,9 +13,15 @@
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, użytkownik {{ u }} 
         
         {% if attendanceType == 1 %} chce wziąć udział {% endif %}
-        {% if attendanceType == 2 %} nie jest pewny czy weźmie udział {% endif %}
-        {% if attendanceType == 3 %} nie zamierza brać udziału {% endif %}
+        {% if attendanceType == 2 %} jest zainteresowany {% endif %}
+        {% if attendanceType == 3 %} zignorował {% endif %}
+        {% if attendanceType == 4 %} nie zamierza brać udziału {% endif %}
         
         </p>
+        <form action = "{{ "/show_event" }}" method="get" />
+            <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
+            <input id="ev_name" name="ev_name" type="hidden" value = {{s}} />
+        </form>
+        
     {% endfor %}
 </div>

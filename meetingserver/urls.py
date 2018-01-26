@@ -20,6 +20,7 @@ from django.urls import path
 from views import main_page
 from views import logged_views
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_page.get_main_page),
@@ -30,7 +31,8 @@ urlpatterns = [
     path('create_event/add_user_field', logged_views.add_user_field),
     path('create_event/del_user_field', logged_views.delete_user_field),
     path('create_event/find_plan_gap', logged_views.find_gap_in_plans),
-    path('create_event/find_inv_gap', logged_views.find_gap_in_invs)
+    path('create_event/find_inv_gap', logged_views.find_gap_in_invs),
+    path('show_event', logged_views.show_event)
 ]
 
 

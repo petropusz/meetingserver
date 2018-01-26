@@ -1,7 +1,7 @@
 
-<h4>Ponowione zaproszenia na spotkania, którym zmienił się termin: </h4>
+<h4>Usunięte spotkania, na które byłeś zaproszony: </h4>
 <div>
-    {% for s, begin, end, creator in new_changed %}
+    {% for s, begin, end, creator in new_deleted %}
         <!--{% 
         try:
             s = inv.meeting.name
