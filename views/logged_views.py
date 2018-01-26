@@ -270,15 +270,36 @@ def show_event(request):
 
 
 
+def my_created_events(request): # TODO
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
 
+    uid = request.session['user_id']
 
+    meeting = Meeting.objects.filter(creator__id=uid)
 
+    # TODO 
 
+def delete_event(request): # TODO
+    
+    # sprawdź sesję
+    
+    # sprawdź czy to wydarzenie tego użytkownika
 
-
-
-
-
+    # dodaj wszystkim którzy byli zaproszeni info o usunięciu do deleted info
+    # TODO TRZEBA OCZYWIŚCIE ZMIENIĆ TĘ TABELĘ Z DELETED INFO ŻEBY KOPIOWAŁA POLA WYDARZENIA BO GO JUŻ NIE BĘDZIE
+    
+    # dopiero na końcu usuń wydarzenie, co spowoduje cascade
+    
+    
+def change_reaction(request): #TODO 
+    
+    # TODO zmienić żeby była jedna tabela zamiast Plan itd., wyszukiwania po Plan np. to teraz będą po tej, ALE
+    # Z DODATKOWYM WARUNKIEM coś w stylu reaction.type = 1   (Reactions.filter(type=1, user=...?))
+    
+    # tu też trzeba ogarnąć zliczanie w wydarzeniu tych, którzy się zgodzili
+    
 
 
     
