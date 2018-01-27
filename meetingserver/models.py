@@ -14,40 +14,31 @@ class Meeting(models.Model):
     acceptedNr = models.PositiveIntegerField()
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     
-class Plan(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    
-class Perhaps(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)    
-    
 class Invitation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    
-class Ignored(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    
-class Rejected(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)    
+    reactionType = models.IntegerField() 
     
 class InviteInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now=True)
+    #time = models.DateTimeField(auto_now=True)
 
 class DeletedInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now=True)
+    #meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    #time = models.DateTimeField(auto_now=True)
+    m_name = models.CharField(max_length=50) 
+    m_begin = models.DateTimeField()
+    m_end = models.DateTimeField()
+    m_invitedNr = models.PositiveIntegerField()
+    m_acceptedNr = models.PositiveIntegerField()
+    m_creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'user' )  # nie wie po czym się ma odnieść do usera czy coś
 
 class CreatorAttendanceInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
-    time = models.DateTimeField(auto_now=True)
+    #time = models.DateTimeField(auto_now=True)
     attendanceType = models.IntegerField()
 
 

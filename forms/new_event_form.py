@@ -2,7 +2,7 @@ from django import forms
 from meetingserver.models import User
 from meetingserver.models import Meeting
 from meetingserver.models import InviteInfo
-from meetingserver.models import Plan
+#from meetingserver.models import Plan
 from meetingserver.models import Invitation
 from django.db import transaction
 from datetime import datetime
@@ -85,7 +85,7 @@ class NewEventForm(forms.Form):
             return False 
         print ("+++++++++++"+str(self.errors))
         unames = self.getUnames(uNr)        
-        planned = Plan.objects.filter(user__name__in=unames)
+        planned = Invitation.objects.filter(user__name__in=unames, reactionType = 1)
         tab = [(datetime.now(pytz.utc), 0)]  # czas kompa, może być inny niby niż czas bazy, ale zał. że jest ok; żeby znalazł teraz jeśli się uda
         for p in planned:
             p_begin = p.meeting.begin
@@ -120,14 +120,16 @@ class NewEventForm(forms.Form):
         if self.errors:
             return False  
         unames = self.getUnames(uNr)        
-        planned = Plan.objects.filter(user__name__in=unames)
-        invitations = Invitation.objects.filter(user__name__in=unames)
+        #planned = Invitation.objects.filter(user__name__in=unames, reactionType = 1)
+        possibly_want = set()
+        possibly_want.add(1).add(2).add(3)
+        invitations = Invitation.objects.filter(user__name__in=unames, reactionType__in = possibly_want) # wszystkie co raczej chcą
         tab = [(datetime.now(pytz.utc),0)]  # czas kompa, może być inny niby niż czas bazy, ale zał. że jest ok; żeby znalazł teraz jeśli się uda
-        for p in planned:
-            p_begin = p.meeting.begin
-            p_end = p.meeting.end
-            tab.append((p_begin, +1))
-            tab.append((p_end, -1))
+        #for p in planned:
+        #    p_begin = p.meeting.begin
+        #    p_end = p.meeting.end
+        #    tab.append((p_begin, +1))
+        #    tab.append((p_end, -1))
         for p in invitations:
             p_begin = p.meeting.begin
             p_end = p.meeting.end
@@ -179,7 +181,7 @@ class NewEventForm(forms.Form):
             print ("E")
             u = User.objects.get(name=uname)  # name to klucz, więc możemy tak
             InviteInfo.objects.create(user=u, meeting=meet) # czasu jak rozumiem nie trzeba jak jest auto_now przy aktualizacji
-            Invitation.objects.create(user=u, meeting=meet)
+            Invitation.objects.create(user=u, meeting=meet, reactionType = 3)  # 3 to że jeszcze nie zareagował
         
     def checkNames(self, uNr):
         #self.errors = {} #how to clean it?!?!

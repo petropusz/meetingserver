@@ -7,7 +7,7 @@ from meetingserver.models import User, Meeting
 from meetingserver.models import InviteInfo
 from meetingserver.models import DeletedInfo
 from meetingserver.models import CreatorAttendanceInfo
-from meetingserver.models import Plan, Perhaps, Invitation, Ignored, Rejected
+from meetingserver.models import Invitation
 from forms.login_form import LoginForm
 from forms.new_event_form import NewEventForm
 
@@ -220,27 +220,27 @@ def show_event(request):
     
 
     #meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
-    i_plan = Plan.objects.filter(meeting__id = event_id)
+    i_plan = Invitation.objects.filter(meeting__id = event_id, reactionType = 1)
     n_plan = set()
     for u in i_plan:
         print ("A")
         n_plan.add(u.user.name)
-    i_per = Perhaps.objects.filter(meeting__id = event_id)
+    i_per = Invitation.objects.filter(meeting__id = event_id, reactionType = 2)
     n_per = set()
     for u in i_per:
         print ("B")
         n_per.add(u.user.name)
-    i_inv = Invitation.objects.filter(meeting__id = event_id)
+    i_inv = Invitation.objects.filter(meeting__id = event_id, reactionType = 3)
     n_inv = set()
     for u in i_inv:
         print ("C")
         n_inv.add(u.user.name)
-    i_ign = Ignored.objects.filter(meeting__id = event_id)
+    i_ign = Invitation.objects.filter(meeting__id = event_id, reactionType = 4)
     n_ign = set()
     for u in i_ign:
         print ("D")
         n_ign.add(u.user.name)
-    i_rej = Rejected.objects.filter(meeting__id = event_id)
+    i_rej = Invitation.objects.filter(meeting__id = event_id, reactionType = 5)
     n_rej = set()
     for u in i_rej:
         print ("E")
@@ -267,7 +267,7 @@ def show_event(request):
     
     return render(request, 'show_event.html', {**info, **notif_dict})
 
-
+"""
 
 
 def my_created_events(request): # TODO
@@ -299,7 +299,7 @@ def change_reaction(request): #TODO
     # Z DODATKOWYM WARUNKIEM coś w stylu reaction.type = 1   (Reactions.filter(type=1, user=...?))
     
     # tu też trzeba ogarnąć zliczanie w wydarzeniu tych, którzy się zgodzili
-    
+ """   
 
 
     
