@@ -60,7 +60,7 @@ def sign_out(request):
         del request.session['ev_us_nr']
     except KeyError:
         pass
-    return HttpResponse("Wylogowano.")
+    return render(request, 'logged_out.html', {})
 
 
 

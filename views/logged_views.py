@@ -268,7 +268,7 @@ def show_event(request):
     return render(request, 'show_event.html', {**info, **notif_dict})
 
 
-"""
+
 
 def my_created_events(request): # TODO
     
@@ -278,8 +278,37 @@ def my_created_events(request): # TODO
     uid = request.session['user_id']
 
     meeting = Meeting.objects.filter(creator__id=uid)
+    
+    u1 = set()
+    for m in meeting:
+        u1.add((m.id, m.name, m.creator.name, m.begin, m.end, m.invitedNr, m.acceptedNr))
 
-    # TODO 
+    return render(request, 'my_created_events.html', {'my_created_events': u1})
+
+def ask_delete_user(request):
+
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+
+    uname = request.session['user_name']  # jest wtedy kiedy jest user_id w sesji
+
+    return render(request, 'ask_sure_delete.html', {'name': uname})
+
+"""
+
+def delete_user(request): # TODO
+
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    # usuń użytkownika
+    
+    # trzeba jeszcze zaktualizować wszystkim wydarzeniom na które był zaproszony że maja już o jednego mniej zaproszonego
+    # i najlepiej tworzącemu wydarzenie by też dać info że ten usunął konto - numer 6 reakcji będzie na to może
+    # JEŚLI TO MA BYĆ W CREATORATTENDANCEINFO TO TRZEBA ZROBIĆ ŻEBY ZAMIAST UŻYTKOWNIKA W KOLUMNIE BYŁA NAZWA - ZMIENIĆ ZNÓW NIECO BAZĘ!!!
+    
+    # przekieruj na stronę z napisem że usunięto i przyciskiem wróć na główną
+
 
 def delete_event(request): # TODO
     
@@ -290,8 +319,7 @@ def delete_event(request): # TODO
     # dodaj wszystkim którzy byli zaproszeni info o usunięciu do deleted info
     # TODO TRZEBA OCZYWIŚCIE ZMIENIĆ TĘ TABELĘ Z DELETED INFO ŻEBY KOPIOWAŁA POLA WYDARZENIA BO GO JUŻ NIE BĘDZIE
     
-    # dopiero na końcu usuń wydarzenie, co spowoduje cascade
-    
+    # dopiero na końcu usuń wydarzenie, co spowoduje cascade   
     
 def change_reaction(request): #TODO 
     
@@ -299,6 +327,8 @@ def change_reaction(request): #TODO
     # Z DODATKOWYM WARUNKIEM coś w stylu reaction.type = 1   (Reactions.filter(type=1, user=...?))
     
     # tu też trzeba ogarnąć zliczanie w wydarzeniu tych, którzy się zgodzili
+    
+    # TODO jeszcze w odpowiednich miejsach wyświetlać przyciski do zmieniania reakcji
    
 """
 

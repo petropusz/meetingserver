@@ -1,0 +1,21 @@
+
+{% extends 'logged_shared.html' %}
+
+{% block main_content %}
+
+    <h2>Czy na pewno chcesz usunąć konto?</h2>
+
+    <form action = "/delete_user" method="get" />
+        <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+        <input type="submit" value = "Usuń konto" />
+        
+    </form>
+    <form action = "/me" method="get" />
+        <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+        <input type="submit" value = "Anuluj" />
+        
+    </form>
+
+{% endblock %}
+
+

@@ -32,7 +32,9 @@ urlpatterns = [
     path('create_event/del_user_field', logged_views.delete_user_field),
     path('create_event/find_plan_gap', logged_views.find_gap_in_plans),
     path('create_event/find_inv_gap', logged_views.find_gap_in_invs),
-    path('show_event', logged_views.show_event)
+    path('show_event', logged_views.show_event),
+    path('my_created_events', logged_views.my_created_events),
+    path('ask_delete_user', logged_views.ask_delete_user)
 ]
 
 
