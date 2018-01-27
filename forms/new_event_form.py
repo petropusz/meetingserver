@@ -122,7 +122,9 @@ class NewEventForm(forms.Form):
         unames = self.getUnames(uNr)        
         #planned = Invitation.objects.filter(user__name__in=unames, reactionType = 1)
         possibly_want = set()
-        possibly_want.add(1).add(2).add(3)
+        possibly_want.add(1)
+        possibly_want.add(2)
+        possibly_want.add(3)
         invitations = Invitation.objects.filter(user__name__in=unames, reactionType__in = possibly_want) # wszystkie co raczej chcą
         tab = [(datetime.now(pytz.utc),0)]  # czas kompa, może być inny niby niż czas bazy, ale zał. że jest ok; żeby znalazł teraz jeśli się uda
         #for p in planned:

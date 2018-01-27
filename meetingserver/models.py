@@ -33,7 +33,8 @@ class DeletedInfo(models.Model):
     m_end = models.DateTimeField()
     m_invitedNr = models.PositiveIntegerField()
     m_acceptedNr = models.PositiveIntegerField()
-    m_creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'user' )  # nie wie po czym się ma odnieść do usera czy coś
+    m_creator_name = models.CharField(max_length=50)  # chcemy żeby info o usunięciu zostało po usunięciu użytkownika który tworzył wydarzenie
+    #models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'user' )  # nie wie po czym się ma odnieść do usera czy coś
 
 class CreatorAttendanceInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

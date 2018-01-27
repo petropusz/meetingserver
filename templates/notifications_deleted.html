@@ -1,7 +1,7 @@
 
 <h4>Usunięte spotkania, na które byłeś zaproszony: </h4>
 <div>
-    {% for id, s, begin, end, creator in new_deleted %}
+    {% for s, begin, end, creator in new_deleted %}
         <!--{% 
         try:
             s = inv.meeting.name

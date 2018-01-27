@@ -1,0 +1,26 @@
+{% extends 'logged_shared.html' %}
+
+{% block main_content %}
+
+
+    {% for id, name, creator, begin, end, nr_inv, nr_yes in my_created_events %}
+        
+
+        <h3> Spotkanie: {{ name }} </h3>
+
+        wydarzenie utworzone przez: {{ creator }} <br>
+        początek spotkania:  {{ begin }} <br>
+        koniec spotkania:  {{ end }} <br>
+        
+        liczba zaproszonych użytkowników:  {{ nr_inv }} <br>
+        udział potwierdziło:  {{ nr_yes }} <br>
+        
+        <form action = "{{ "/show_event" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+            <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+            <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
+            <input id="ev_id" name="ev_id" type="hidden" value = "{{id}}" />
+        </form>
+        
+    {% endfor %}
+
+{% endblock %}

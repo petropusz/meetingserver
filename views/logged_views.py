@@ -25,8 +25,8 @@ def get_my_notifications(myid, uname):
         
     u2 = set()
     for inv in new_deleted:
-        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
+        #print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
+        u2.add((inv.m_name, inv.m_begin, inv.m_end, inv.m_creator_name))
         
     u3 = set()
     for inv in new_attendance:
@@ -267,8 +267,8 @@ def show_event(request):
     
     return render(request, 'show_event.html', {**info, **notif_dict})
 
-"""
 
+"""
 
 def my_created_events(request): # TODO
     
@@ -299,7 +299,7 @@ def change_reaction(request): #TODO
     # Z DODATKOWYM WARUNKIEM coś w stylu reaction.type = 1   (Reactions.filter(type=1, user=...?))
     
     # tu też trzeba ogarnąć zliczanie w wydarzeniu tych, którzy się zgodzili
- """   
-
+   
+"""
 
     
