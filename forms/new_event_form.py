@@ -173,7 +173,7 @@ class NewEventForm(forms.Form):
         print ("+"+str(myuId)) # bez str się na tym wywalał...
         print ("WUT")
         myu = User.objects.get(id=myuId)
-        print ("C"+name1+str(begin1)+str(end1))   # TODO MA NIE BYĆ NONE BO NIE ZADZIAŁA
+        print ("C"+name1+str(begin1)+str(end1))   
         # zakładam że twórca wydarzenia niekoniecznie musi na nie iść, i traktuję go jako każdego innego
         # w szczególności może go w ogóle nie być w uczestnikach
         meet = Meeting.objects.create(name=name1, begin=begin1, end=end1, invitedNr=uNr, acceptedNr=0, creator=myu)
@@ -182,7 +182,7 @@ class NewEventForm(forms.Form):
             uname = self.cleaned_data['u'+str(i)].strip()
             print ("E")
             u = User.objects.get(name=uname)  # name to klucz, więc możemy tak
-            InviteInfo.objects.create(user=u, meeting=meet) # czasu jak rozumiem nie trzeba jak jest auto_now przy aktualizacji
+            InviteInfo.objects.create(user=u, meeting=meet)  
             Invitation.objects.create(user=u, meeting=meet, reactionType = 3)  # 3 to że jeszcze nie zareagował
         
     def checkNames(self, uNr):

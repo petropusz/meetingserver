@@ -2,13 +2,20 @@
 
 {% block main_content %}
 
-    <h2> Wydarzenia, które utworzyłeś: </h2>
+    <h2> Wydarzenia, na które jesteś zaproszony </h2>
 
-    {% for id, name, creator, begin, end, nr_inv, nr_yes in my_created_events %}
+    {% for id, name, creator, begin, end, nr_inv, nr_yes, reactionType in my_invited_events %}
         
 
         <h3> Spotkanie: {{ name }} </h3>
-
+        <h4> Twoja reakcja: 
+        {% if reactionType == 1 %} chcę wziąć udział {% endif %}
+        {% if reactionType == 2 %} jestem zainteresowany {% endif %}
+        {% if reactionType == 3 %} (jeszcze nie zareagowałeś na zaproszenie) {% endif %} 
+        {% if reactionType == 4 %} nie wiem, czy wezmę udział {% endif %}
+        {% if reactionType == 5 %} nie wezmę udziału {% endif %}
+        {% if reactionType == 6 %} usunąłem konto {% endif %}  <!-- to nie ma szans się wyświetlić -->
+        </h4>
         wydarzenie utworzone przez: {{ creator }} <br>
         początek spotkania:  {{ begin }} <br>
         koniec spotkania:  {{ end }} <br>

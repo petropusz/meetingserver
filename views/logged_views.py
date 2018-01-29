@@ -222,6 +222,8 @@ def show_event(request):
 
     print ("HEH")
     
+    
+    
 
     #meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     i_plan = Invitation.objects.filter(meeting__id = event_id, reactionType = 1)
@@ -255,6 +257,8 @@ def show_event(request):
     uname = request.session['user_name']
     myid = request.session['user_id']
     
+    my_event = (meeting.creator.id == myid)
+    
     notif_dict = get_my_notifications(myid, uname)
     
     info = {'meeting_name': meeting.name,
@@ -267,19 +271,23 @@ def show_event(request):
             'n_per': n_per, 
             'n_inv': n_inv, 
             'n_ign': n_ign, 
-            'n_rej': n_rej}
+            'n_rej': n_rej,
+            'my_event': my_event,
+            'm_id': meeting.id
+            }
     
     return render(request, 'show_event.html', {**info, **notif_dict})
 
 
 
 
-def my_created_events(request): # TODO
+def my_created_events(request): 
     
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
 
     uid = request.session['user_id']
+    uname = request.session['user_name']
 
     meeting = Meeting.objects.filter(creator__id=uid)
     
@@ -287,7 +295,10 @@ def my_created_events(request): # TODO
     for m in meeting:
         u1.add((m.id, m.name, m.creator.name, m.begin, m.end, m.invitedNr, m.acceptedNr))
 
-    return render(request, 'my_created_events.html', {'my_created_events': u1})
+    notif_dict = get_my_notifications(uid, uname)
+    d1 = {'my_created_events': u1}
+
+    return render(request, 'my_created_events.html', {**d1, **notif_dict})
 
 def ask_delete_user(request):
 
@@ -371,19 +382,76 @@ def delete_user(request): # TODO
     # JEŚLI TO MA BYĆ W CREATORATTENDANCEINFO TO TRZEBA ZROBIĆ ŻEBY ZAMIAST UŻYTKOWNIKA W KOLUMNIE BYŁA NAZWA - ZMIENIĆ ZNÓW NIECO BAZĘ!!!
     
     # przekieruj na stronę z napisem że usunięto i przyciskiem wróć na główną
-"""
 
-def delete_event(request): # TODO
+
+def delete_event(request):  # przycisk do usuwania tylko w widoku wydarzenia
     
     # sprawdź sesję
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
     
+    event_id = None   
+    if request.method == 'POST':
+        print ("'''''''''")
+        event_id = request.POST.get('ev_id', '')
+    else:
+        print ("------------")
+        event_id = request.GET.get('ev_id', '')
+    
+    print ("****" + event_id)
+    
+    try:
+        print ("TRYING TO FIND")
+        meeting = Meeting.objects.get(id=event_id)
+        print ("FOUND")
+    except:
+        return HttpResponseRedirect("/")
+    
+    if not event_id:
+        return HttpResponseRedirect("/")
+        
     # sprawdź czy to wydarzenie tego użytkownika
-
+    if meeting.creator.id != uid:
+        return HttpResponseRedirect("/")
+        
     # dodaj wszystkim którzy byli zaproszeni info o usunięciu do deleted info
-    # TODO TRZEBA OCZYWIŚCIE ZMIENIĆ TĘ TABELĘ Z DELETED INFO ŻEBY KOPIOWAŁA POLA WYDARZENIA BO GO JUŻ NIE BĘDZIE
+    invitationsAttending = Invitation.objects.filter(meeting__id = meeting.id)
+    for inv in invitationsAttending:
+        DeletedInfo.objects.create(user = inv.user, m_name = meeting.name, m_begin = meeting.begin, \
+        m_end = meeting.end, m_invitedNr = meeting.invitedNr, m_acceptedNr = meeting.acceptedNr, m_creator_name = meeting.creator.name)
     
     # dopiero na końcu usuń wydarzenie, co spowoduje cascade   
+    meeting.delete()
     
+    return HttpResponseRedirect("/me")  # ew. przekierowywać do adresu pobranego z ukrytego pola formularza - tego, z ktorego przyszło żądanie
+    
+def my_invitations(request):
+
+    # sprawdź sesję
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+    uname = request.session['user_name']
+    
+    attending = Invitation.objects.filter(user__id = uid)
+    
+    u1 = set()
+    for m in attending:
+        u1.add((m.meeting.id, m.meeting.name, m.meeting.creator.name, m.meeting.begin, m.meeting.end, \
+        m.meeting.invitedNr, m.meeting.acceptedNr, m.reactionType))
+        
+    notif_dict = get_my_notifications(uid, uname)
+    d1 = {'my_invited_events': u1}
+
+    return render(request, 'my_invited_events.html', {**d1, **notif_dict})
+
+
+""" 
+    
+# reakcje tylko z poziomu wyświetlonego zdarzenia    
 def change_reaction(request): #TODO 
     
     # TODO zmienić żeby była jedna tabela zamiast Plan itd., wyszukiwania po Plan np. to teraz będą po tej, ALE

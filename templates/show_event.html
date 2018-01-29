@@ -13,6 +13,14 @@
     udział potwierdziło:  {{ meeting_nr_yes }} <br>
     
     <hr>
+    
+    {% if my_event %}
+    <form action = "{{ "/delete_event" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+        <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+        <input type="submit" value = "Usuń wydarzenie {{ meeting_name }}" />
+        <input id="ev_id" name="ev_id" type="hidden" value = "{{ m_id }}" />
+    </form>
+    {% endif %}
 
     <h4> Użytkownicy, którzy potwierdzili, że wezmą udział: </h4>
     {% for user_name in n_plan %}
