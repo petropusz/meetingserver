@@ -32,10 +32,10 @@ def get_my_notifications(myid, uname):
     u3 = set()
     for inv in new_attendance:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.user.name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+        u3.add((inv.id, inv.user.name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
     for inv in deleted_attending_users_info:
         print ("###"+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.user_name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, 6))
+        u3.add((inv.id, inv.user_name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, 6))  # żeby było w 1 zbiorze
         
     return {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
                                         'new_attendance': u3}
@@ -193,6 +193,8 @@ def find_gap_in_invs(request):
 
     
 
+
+
 def show_event(request):
     
     if 'user_id' not in request.session:
@@ -222,8 +224,11 @@ def show_event(request):
 
     print ("HEH")
     
-    
-    
+    # można by też w osobnej funkcji tylko jak wyświetlanie z powiadomień,
+    # ale tak wygodniej, a nie jest aż takie nieefektywne
+    uid = request.session['user_id']
+    notif = InviteInfo.objects.filter(user__id = uid, meeting_id = meeting.id)
+    notif.delete()
 
     #meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     i_plan = Invitation.objects.filter(meeting__id = event_id, reactionType = 1)
@@ -448,6 +453,47 @@ def my_invitations(request):
 
     return render(request, 'my_invited_events.html', {**d1, **notif_dict})
 
+def ok_attendance_not_del(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+    
+    row_id = None   
+    if request.method == 'POST':
+        print ("'''''''''")
+        row_id = request.POST.get('row_id', '')
+    else:
+        print ("------------")
+        row_id = request.GET.get('row_id', '')
+    
+    info = CreatorAttendanceInfo.objects.get(id = row_id)  # ok, bo inny nie może tego row_id - jak ze strony to się nie wywali
+    
+    info.delete()
+    
+    return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
+    
+def ok_attendance_del(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+    
+    row_id = None   
+    if request.method == 'POST':
+        print ("'''''''''")
+        row_id = request.POST.get('row_id', '')
+    else:
+        print ("------------")
+        row_id = request.GET.get('row_id', '')
+    
+    info = DeletedUserEventCreatorInfo.objects.get(id = row_id)  # ok, bo inny nie może tego row_id - jak ze strony to się nie wywali
+    
+    info.delete()
+    
+    return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
 
 """ 
     
