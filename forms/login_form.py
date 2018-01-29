@@ -1,3 +1,7 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
+"""formularz logowania"""
+
 from django import forms
 from meetingserver.models import User
 
@@ -5,6 +9,7 @@ class LoginForm(forms.Form):
     name = forms.CharField(label="login", max_length=50, required = True)
     pwd = forms.CharField(label="hasło", max_length=50, widget=forms.PasswordInput, required = True)
     def clean(self):
+        """sprawdź poprawność danych - to jest wywoływane w formularzach django"""
         n = self.cleaned_data['name'].strip()
         try:
             dane = User.objects.get(name=n)  # name to klucz, więc możemy tak

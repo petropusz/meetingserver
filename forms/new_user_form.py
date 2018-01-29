@@ -1,8 +1,11 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
+"""formularz tworzenia nowego konta"""
+
 from django import forms
 from meetingserver.models import User
 
 class NewUserForm(forms.Form):
-    #error_css_class = 'error'
     name = forms.CharField(label="login", max_length=50)
     pwd = forms.CharField(label="hasło", max_length=50, widget=forms.PasswordInput)
     pwdEnsure =  forms.CharField(label = "powtórz hasło", max_length=50, widget=forms.PasswordInput)
@@ -11,37 +14,16 @@ class NewUserForm(forms.Form):
     
     #nic nie robi albo rzuca wyjątek
     
-    #def cleanName(self, n): #clean_name by sam wywołał, a ja chcę żeby wywołał tylko clean bo wtedy jest po kolei i w ogóle
-        #n = self.cleaned_data['name'].strip()
-        
-        #dane = User.objects.filter(name=n)
-        #if dane:
-            #raise forms.ValidationError('Nazwa użytkownika jest zajęta')
-        #    self.add_error('name', 'Nazwa użytkownika jest zajęta!')
-        #try:
-        #    
-        #except Error:
-        #    
-        # po przekierowaniu do funkcji co tworzy też może pójść błąd!
-        #return
-        
-    def clean(self): #TODO prawdzić czy się może nazywać z takim po clean_
+    def clean(self): 
+        """sprawdź poprawność danych i ew., pododawaj info o błędach do formularza"""
         n = self.cleaned_data['name'].strip()
-        
-        #self.cleanName(n)  # niepotrzebne w sumie jak tam niżej tworzymy
-        
-        
         
         p1 = self.cleaned_data['pwd']
         if len(p1) < 5:
-            #raise forms.ValidationError('Hasło jest za krótkie')
             self.add_error('pwd', 'Hasło jest za krótkie')
         p2 = self.cleaned_data['pwdEnsure']
         if p1 != p2:
-            #raise forms.ValidationError('Powtórzone hasło nie jest zgodne z podanym')
             self.add_error('pwdEnsure', 'Powtórzone hasło nie jest zgodne z podanym')
-            
-            
             
         try:
             dane = User.objects.filter(name=n)
@@ -54,9 +36,9 @@ class NewUserForm(forms.Form):
         except:
             self.add_error('name', 'Nazwa użytkownika jest zajęta!')
             whatid = -1
-            #raise forms.ValidationError('Nazwa użytkownika jest zajęta') # tutaj dodajemy bo inaczej użytkownikowi mogłyby przepaść wypełnione dane
-                                                                         # jeśli dwóch by chciało ten sam login w tym samym czasie, oba formularze by przeszły a potem kuku
-                                                                         # tudzież login; a może chce tylko dopisać '1234'    
+            # tutaj dodajemy bo inaczej użytkownikowi mogłyby przepaść wypełnione dane
+            # jeśli dwóch by chciało ten sam login w tym samym czasie, oba formularze by przeszły a potem kuku
+            # tudzież login; a może chce tylko dopisać '1234'    
             
         return {'id': whatid, 'name': n } # zwracamy już bez hasła, bo się nim zajęliśmy
         

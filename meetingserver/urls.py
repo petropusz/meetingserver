@@ -1,3 +1,5 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
 """meetingserver URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -41,7 +43,8 @@ urlpatterns = [
     path('my_invitations', logged_views.my_invitations),
     path('ok_attendance_del', logged_views.ok_attendance_del),
     path('ok_attendance_not_del', logged_views.ok_attendance_not_del),
-    path('change_reaction', logged_views.change_reaction)
+    path('change_reaction', logged_views.change_reaction),
+    path('show_users', logged_views.show_users)
 ]
 
 

@@ -1,0 +1,1 @@
+"""pliki głównie konfiguracyjne projektu"""

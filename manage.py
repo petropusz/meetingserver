@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+""" skrypt django do zarządzania """
+
 import os
 import sys
 

@@ -1,3 +1,10 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
+"""
+plik z modelem bazy danych
+"""
+
+
 from django.db import models
 
 class User(models.Model):
@@ -6,7 +13,7 @@ class User(models.Model):
     
 class Meeting(models.Model):  # znika jak znika użytkownik który je utworzył (bo cascade), albo jak je usunie
     name = models.CharField(max_length=50) 
-    #nazwy wydarzeń nie muszą być unikalne, ktoś może zaproponować nawet dwa dokładnie takie same, bo czemu nie?
+    # nazwy wydarzeń nie muszą być unikalne, ktoś może zaproponować nawet dwa dokładnie takie same, bo czemu nie?
     # ogarniemy które bo klucz zewnętrzny w plan itp.
     begin = models.DateTimeField()
     end = models.DateTimeField()

@@ -1,3 +1,5 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
 """
 Django settings for meetingserver project on Heroku. For more info, see:
 https://github.com/heroku/heroku-django-template

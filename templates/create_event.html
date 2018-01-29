@@ -1,4 +1,6 @@
 
+<!-- widok z formularzem do tworzenia spotkania -->
+
 {% extends 'logged_shared.html' %}
 
 {% block main_content %}
@@ -8,11 +10,7 @@
     {% csrf_token %}
     {% if form.errors %}
     <p style="color: red;">
-        Formularz zawiera błędy <!-- {{ form.errors  }} WYPISUJE NAZWĘ POLA, A NIE ETYKIETĘ, KTO TO PISAŁ-->
-        
-        <!-- {% for error in form.errors %}
-            <li>{{error|escape}}</li>    WYPISUJE TYLKO NAZWĘ POLA, A NIE ETYKIETĘ, KTO TO PISAŁ
-        {% endfor %} -->
+        Formularz zawiera błędy <!-- {{ form.errors  }} WYPISUJE NAZWĘ POLA, A NIE ETYKIETĘ, JA NIE MOGĘ -->
     </p>
     {% endif %}
     <div class="form-group">

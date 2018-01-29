@@ -1,3 +1,9 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
+"""główny duży moduł z funkcjami obsługującymi po zalogowaniu;
+każde żądanie powinien obsługiwac oddzielny wątek; 
+każde żądanie ma atomiczną transakcję w bazie (patrz plik settings)"""
+
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response #nie działa z csrf
@@ -14,6 +20,7 @@ from forms.new_event_form import NewEventForm
 from django.views.decorators.csrf import csrf_protect
 
 def get_my_notifications(myid, uname):
+    """wydostań z bazy moje powiadomienia"""
     new_invite = InviteInfo.objects.filter(user__id=myid)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     new_deleted = DeletedInfo.objects.filter(user__id=myid)
     new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
@@ -21,27 +28,23 @@ def get_my_notifications(myid, uname):
     
     u1 = set()
     for inv in new_invite:
-        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u1.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.meeting.creator.name))
         
     u2 = set()
     for inv in new_deleted:
-        #print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u2.add((inv.id, inv.m_name, inv.m_begin, inv.m_end, inv.m_creator_name))
         
     u3 = set()
     for inv in new_attendance:
-        print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u3.add((inv.id, inv.user.name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
     for inv in deleted_attending_users_info:
-        print ("###"+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
         u3.add((inv.id, inv.user_name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, 6))  # żeby było w 1 zbiorze
         
     return {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
                                         'new_attendance': u3}
 
 def me(request):
-    
+    """wyświetl stronę główną po zalogowaniu, tylko pasek nawig., nazwa użytkownika i powiadomienia"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
     
@@ -58,7 +61,7 @@ def me(request):
     
 
 def create_event(request):
-    
+    """obsługa polecenia tworzenia wydarzenia przez formularz tworzenia wydarzenia"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -71,29 +74,25 @@ def create_event(request):
         if form.is_valid():  # nic nie robi (albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
                             
-            #data = form.cleaned_data
-            #request.session['logged'] = True
             form.checkClean(request.session['ev_us_nr'])
             if not form.errors:
                 try:
-                    print ("starting event creation")
-                    print (";;"+str(request.session['user_id']))
                     form.create_event(request.session['user_id'], request.session['ev_us_nr'])
                     del request.session['ev_us_nr']
-                    print ("EVENT CREATED, HM")
+                    
                 except:
                     form.checkClean(request.session['ev_us_nr'])
                     return render(request, 'create_event.html', {'form': form})
                 return HttpResponseRedirect("/me") # TODO strona wydarzenia którą zwraca zaakceptowany formularz jako swoje cleaned_data
     else:
-        form = NewEventForm() # TODO jak to zrobic żeby było ok
+        form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
     
 def add_user_field(request):
-    
+    """obsługa polecenia dodania pola na zaproszonego użytkownika w formularzu
+    tworzenia wydarzenia"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -101,7 +100,6 @@ def add_user_field(request):
         request.session['ev_us_nr']=1    
         
     request.session['ev_us_nr'] += 1    
-    print (request.session['ev_us_nr'])
         
     if request.method == 'POST':
         form = NewEventForm(request.POST)
@@ -111,12 +109,12 @@ def add_user_field(request):
         form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
 
 
 def delete_user_field(request):
-    
+    """obsługa polecenia usunięcia pola na zaproszonego użytkownika w formularzu
+    tworzenia wydarzenia"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -126,32 +124,27 @@ def delete_user_field(request):
     if request.session['ev_us_nr'] > 1:
         request.session['ev_us_nr'] -= 1   
         
-    print (request.session['ev_us_nr'])     
-        
     if request.method == 'POST':
         form = NewEventForm(request.POST)
-        form.ensure_user_field_nr(request.session['ev_us_nr']) #form.del_user()
-        
+        form.ensure_user_field_nr(request.session['ev_us_nr']) 
         # użytkownik może sobie dodawać coś do formularza, jakieś dziwne pola (w html), ale będą ignorowane
     else:
         form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1 
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
 
 
 
 def find_gap_in_plans(request):
-    
+    """znajdź pierwszą dostatecznie długą lukę że zaproszeni nie powiedzieli
+    że będą na jakimś spotkaniu w trakcie"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
     if 'ev_us_nr' not in request.session:
         request.session['ev_us_nr']=1    
     
-    print ("=======" + str(request.session['ev_us_nr']))
-        
     if request.method == 'POST':
         form = NewEventForm(request.POST.copy())   # musi być .copy, żeby .data było mutable!!!
         form.ensure_user_field_nr(request.session['ev_us_nr'])   # TO MA ZNACZENIE NA GOTOWYM FORMULARZU, BO FORMULARZ NIBY MA POLA,
@@ -166,11 +159,11 @@ def find_gap_in_plans(request):
         form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
 
 def find_gap_in_invs(request):
-    
+    """znajdź pierwszą lukę gdzie nie mogą mieć zaproszeń, chyba że powiedzieli
+    że nie wiedzą czy będą albo że ich nie będzie"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -188,15 +181,13 @@ def find_gap_in_invs(request):
         form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    #c['form'] = form    
     return render(request, 'create_event.html', {'form': form})
-
-    
-
 
 
 def show_event(request):
-    
+    """wyświetl wydarzenie z początkiem, końcem, zaproszonymi i jak zareagowali na zaproszenie,
+    - jeśli ten użytkownik je utworzył, to wyświetl mu przycisk do usunięcia
+    - jeśli ten użytkownik jest zaproszony, to wyświetl mu przyciski reakcji"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
      
@@ -204,26 +195,19 @@ def show_event(request):
      
     event_id = None   
     if request.method == 'POST':
-        print ("'''''''''")
         event_id = request.POST.get('ev_id', '')
     else:
-        print ("------------")
         event_id = request.GET.get('ev_id', '')
     
-    print ("****" + event_id)
-    
     try:
-        print ("TRYING TO FIND")
         meeting = Meeting.objects.get(id=event_id)
-        print ("FOUND")
+        
     except:
         return HttpResponseRedirect("/")
     
     if not event_id:
         return HttpResponseRedirect("/")
 
-    print ("HEH")
-    
     # można by też w osobnej funkcji tylko jak wyświetlanie z powiadomień,
     # ale tak wygodniej, a nie jest aż takie nieefektywne
     uid = request.session['user_id']
@@ -234,30 +218,23 @@ def show_event(request):
     i_plan = Invitation.objects.filter(meeting__id = event_id, reactionType = 1)
     n_plan = set()
     for u in i_plan:
-        print ("A")
         n_plan.add(u.user.name)
     i_per = Invitation.objects.filter(meeting__id = event_id, reactionType = 2)
     n_per = set()
     for u in i_per:
-        print ("B")
         n_per.add(u.user.name)
     i_inv = Invitation.objects.filter(meeting__id = event_id, reactionType = 3)
     n_inv = set()
     for u in i_inv:
-        print ("C")
         n_inv.add(u.user.name)
     i_ign = Invitation.objects.filter(meeting__id = event_id, reactionType = 4)
     n_ign = set()
     for u in i_ign:
-        print ("D")
         n_ign.add(u.user.name)
     i_rej = Invitation.objects.filter(meeting__id = event_id, reactionType = 5)
     n_rej = set()
     for u in i_rej:
-        print ("E")
         n_rej.add(u.user.name)
-    
-    print ("CZŁEK:" + meeting.creator.name)
     
     uname = request.session['user_name']
     myid = request.session['user_id']
@@ -272,8 +249,6 @@ def show_event(request):
         my_inv_reac = reaction.reactionType
     except:
         pass
-    
-    print("@@@@@@"+str(my_inv_reac))
     
     info = {'meeting_name': meeting.name,
             'meeting_creator': meeting.creator.name, 
@@ -290,7 +265,7 @@ def show_event(request):
             'm_id': meeting.id,
             'my_invited_reaction': my_inv_reac,
             'list_1245': [1,2,4,5]
-            }
+            }  # list_1245 muszę przekazywać bo szablony django w html tego nie obsługują
     
     return render(request, 'show_event.html', {**info, **notif_dict})
 
@@ -298,7 +273,8 @@ def show_event(request):
 
 
 def my_created_events(request): 
-    
+    """wyświetl wydarzenia utworzone przez tego użytkownika, tzn listę,
+    z przyciskami którymi można wyświetlać szczegóły"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
 
@@ -317,7 +293,7 @@ def my_created_events(request):
     return render(request, 'my_created_events.html', {**d1, **notif_dict})
 
 def ask_delete_user(request):
-
+    """spytaj czy użytkownik na pewno chce usunąć konto"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
 
@@ -326,7 +302,8 @@ def ask_delete_user(request):
     return render(request, 'ask_sure_delete.html', {'name': uname})
 
 def ok_deleted_att_event_info(request):
-    
+    """kliknij info że wydarzenie co był zaproszony usunięte,
+    żeby się już powiadomienie nie wyświetlało"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -334,10 +311,8 @@ def ok_deleted_att_event_info(request):
     
     row_id = None   
     if request.method == 'POST':
-        print ("'''''''''")
         row_id = request.POST.get('row_id', '')
     else:
-        print ("------------")
         row_id = request.GET.get('row_id', '')
     
     info = DeletedInfo.objects.get(id = row_id)
@@ -347,7 +322,7 @@ def ok_deleted_att_event_info(request):
     return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
 
 def delete_user(request): # TODO
-
+    """usuń użytkownika"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -360,7 +335,6 @@ def delete_user(request): # TODO
     meetings_invited = set()
     for inv in invited:
         meetings_invited.add((inv.meeting, inv.reactionType))
-    
     for meeting, reac in meetings_invited:
         meeting.invitedNr -= 1
         if reac == 1:
@@ -376,11 +350,9 @@ def delete_user(request): # TODO
             DeletedInfo.objects.create(user = inv.user, m_name = meeting.name, m_begin = meeting.begin, \
             m_end = meeting.end, m_invitedNr = meeting.invitedNr, m_acceptedNr = meeting.acceptedNr, m_creator_name = uname)
     
-    
-    
     thisUsr.delete()
     
-    # trzeba go wylogować też, nie żeby coś
+    # trzeba go wylogować też
     try:
         del request.session['user_id']
         del request.session['name']
@@ -390,17 +362,11 @@ def delete_user(request): # TODO
     return render(request, 'logged_out.html', {})
     
     return render(request, 'user_deleted.html', {'name': uname})
-        
-    # usuń użytkownika
     
-    # trzeba jeszcze zaktualizować wszystkim wydarzeniom na które był zaproszony że maja już o jednego mniej zaproszonego
-    # i najlepiej tworzącemu wydarzenie by też dać info że ten usunął konto - numer 6 reakcji będzie na to może
-    # JEŚLI TO MA BYĆ W CREATORATTENDANCEINFO TO TRZEBA ZROBIĆ ŻEBY ZAMIAST UŻYTKOWNIKA W KOLUMNIE BYŁA NAZWA - ZMIENIĆ ZNÓW NIECO BAZĘ!!!
-    
-    # przekieruj na stronę z napisem że usunięto i przyciskiem wróć na główną
 
 
 def delete_event(request):  # przycisk do usuwania tylko w widoku wydarzenia
+    """usuń wydarzenie - dostępne dla twórcy wydarzenia z podglądu wydarzenia"""
     
     # sprawdź sesję
     if 'user_id' not in request.session:
@@ -410,18 +376,12 @@ def delete_event(request):  # przycisk do usuwania tylko w widoku wydarzenia
     
     event_id = None   
     if request.method == 'POST':
-        print ("'''''''''")
         event_id = request.POST.get('ev_id', '')
     else:
-        print ("------------")
         event_id = request.GET.get('ev_id', '')
     
-    print ("****" + event_id)
-    
     try:
-        print ("TRYING TO FIND")
         meeting = Meeting.objects.get(id=event_id)
-        print ("FOUND")
     except:
         return HttpResponseRedirect("/")
     
@@ -444,7 +404,8 @@ def delete_event(request):  # przycisk do usuwania tylko w widoku wydarzenia
     return HttpResponseRedirect("/me")  # ew. przekierowywać do adresu pobranego z ukrytego pola formularza - tego, z ktorego przyszło żądanie
     
 def my_invitations(request):
-
+    """wyświetl listę wydarzeń na które byłem zaproszony i jak reagowałem"""
+    
     # sprawdź sesję
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
@@ -465,7 +426,7 @@ def my_invitations(request):
     return render(request, 'my_invited_events.html', {**d1, **notif_dict})
 
 def ok_attendance_not_del(request):
-    
+    """zrób żeby info o reakcji innego użytkownika na zaproszenie które dał ten się nie wyświetlało"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -473,10 +434,8 @@ def ok_attendance_not_del(request):
     
     row_id = None   
     if request.method == 'POST':
-        print ("'''''''''")
         row_id = request.POST.get('row_id', '')
     else:
-        print ("------------")
         row_id = request.GET.get('row_id', '')
     
     info = CreatorAttendanceInfo.objects.get(id = row_id)  # ok, bo inny nie może tego row_id - jak ze strony to się nie wywali
@@ -486,7 +445,7 @@ def ok_attendance_not_del(request):
     return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
     
 def ok_attendance_del(request):
-    
+    """zrób żeby powiadomienie że użytkownik którego ten zaprosił usunął konto się już nie wyświetlało"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -494,10 +453,8 @@ def ok_attendance_del(request):
     
     row_id = None   
     if request.method == 'POST':
-        print ("'''''''''")
         row_id = request.POST.get('row_id', '')
     else:
-        print ("------------")
         row_id = request.GET.get('row_id', '')
     
     info = DeletedUserEventCreatorInfo.objects.get(id = row_id)  # ok, bo inny nie może tego row_id - jak ze strony to się nie wywali
@@ -510,7 +467,7 @@ def ok_attendance_del(request):
     
 # reakcje tylko z poziomu wyświetlonego zdarzenia    
 def change_reaction(request): 
-    
+    """zmień reakcję tego użytkownika na dane zaproszenie"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
         
@@ -519,31 +476,22 @@ def change_reaction(request):
     reac = None   
     ev_id = None
     if request.method == 'POST':
-        print ("'''''''''")
         reac = int(request.POST.get('new_reaction', ''))
         ev_id = request.POST.get('ev_id', '')
     else:
-        print ("------------")
         reac = int(request.GET.get('new_reaction', ''))
         ev_id = request.GET.get('ev_id', '')
-        
-    print ("REAC: " + str(reac))    
         
     try:
         meeting = Meeting.objects.get(id=ev_id)  # na filter potem było źle, bo .coś, a except pięknie łapało...
         reaction = Invitation.objects.get(user__id = uid, meeting__id = ev_id)  # na filter potem było źle, bo .coś, a except pięknie łapało...
-        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
-        if reac == 1:  #nowa reakcja
-            print ("ZWIĘKSZ WRESZCIE")
-            meeting.acceptedNr = meeting.acceptedNr + 1  # jak spadnie poniżej 0, to leci z bazy??
+        if reac == 1:  #nowa reakcja; najpierw zwiększanie, żeby nie spadło poniżej zera, bo PositiveIntegerField
+            meeting.acceptedNr = meeting.acceptedNr + 1  
         meeting.save()    
         if reaction.reactionType == 1:  #stara reakcja
             meeting.acceptedNr = meeting.acceptedNr - 1
-        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac) + " ehh: " +str(meeting.acceptedNr))
         meeting.save()
-        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
         reaction.reactionType = reac
-        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
         reaction.save()
     except:    
         HttpResponseRedirect("/me")
@@ -551,6 +499,30 @@ def change_reaction(request):
     return HttpResponseRedirect("/me")
    
    
-
+def show_users(request):
+    """wyświetl listę wszystkich użytkowników"""
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+    
+    usrs = User.objects.all()
+    
+    u1 = set()
+    for u in usrs:
+        u1.add((u.name))
+    
+    return render(request, 'all_users.html', {'usrs': u1})
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     

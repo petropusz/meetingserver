@@ -1,15 +1,10 @@
 
+<!-- powiadomienia o usuniętych spotkaniach na które użytkownik był zaproszony -->
+
 <h4>Usunięte spotkania, na które byłeś zaproszony: </h4>
 <div  class="container">
     <ul>
     {% for id, s, begin, end, creator in new_deleted %}
-        <!--{% 
-        try:
-            s = inv.meeting.name
-            begin = inv.meeting.begin
-            end = inv.meeting.end
-            creator = inv.meeting.creator.name
-        %} -->
         <li>
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, utworzone przez {{ creator }} </p>
         <form action = "{{ "/ok_deleted_att_event_info" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->

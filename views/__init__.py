@@ -1,0 +1,1 @@
+"""obsługa żądań użytkownika"""

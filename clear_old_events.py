@@ -1,3 +1,10 @@
+# !/usr/bin/env/python
+# -*- coding: utf-8 -*-
+""" 
+middleware usuwające wydarzenia, które minęły
+- usuwa przy starcie aplikacji albo jeśli ostatnie usuwanie było 
+  > 2 minuty temu 
+"""
 
 from meetingserver.models import Meeting
 import pytz  # żeby mieć "timezone-aware" now
@@ -27,4 +34,4 @@ class PastEventClearer:
     def clear_past_events(self):
         
         Meeting.objects.filter(end__lte=datetime.now(pytz.utc)).delete()  # usuwa też z innych tabel, bo CASCADE
-                                                                          # po co komu <, zróbmy __lte [...]
+                                                                          
