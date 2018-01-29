@@ -1,7 +1,7 @@
 
 <h4>Nowe reakcje użytkowników na Twoje propozycje spotkań: </h4>
 <div>
-    {% for id, s, begin, end, attendanceType in new_attendance %}
+    {% for u, id, s, begin, end, attendanceType in new_attendance %}
         <!--{% 
         try:
             s = inv.meeting.name
@@ -14,8 +14,10 @@
         
         {% if attendanceType == 1 %} chce wziąć udział {% endif %}
         {% if attendanceType == 2 %} jest zainteresowany {% endif %}
-        {% if attendanceType == 3 %} zignorował {% endif %}
-        {% if attendanceType == 4 %} nie zamierza brać udziału {% endif %}
+        {% if attendanceType == 3 %} jeszcze nie zareagował {% endif %} <!-- tego nie będzie -->
+        {% if attendanceType == 4 %} zignorował zaproszenie {% endif %}
+        {% if attendanceType == 5 %} nie zamierza brać udziału {% endif %}
+        {% if attendanceType == 6 %} usunął konto {% endif %}
         
         </p>
         <form action = "{{ "/show_event" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->

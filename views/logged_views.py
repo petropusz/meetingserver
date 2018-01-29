@@ -6,7 +6,7 @@ from django.template import RequestContext
 from meetingserver.models import User, Meeting
 from meetingserver.models import InviteInfo
 from meetingserver.models import DeletedInfo
-from meetingserver.models import CreatorAttendanceInfo
+from meetingserver.models import CreatorAttendanceInfo, DeletedUserEventCreatorInfo
 from meetingserver.models import Invitation
 from forms.login_form import LoginForm
 from forms.new_event_form import NewEventForm
@@ -17,6 +17,7 @@ def get_my_notifications(myid, uname):
     new_invite = InviteInfo.objects.filter(user__id=myid)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     new_deleted = DeletedInfo.objects.filter(user__id=myid)
     new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
+    deleted_attending_users_info =  DeletedUserEventCreatorInfo.objects.filter(meeting__creator__id=myid)
     
     u1 = set()
     for inv in new_invite:
@@ -26,12 +27,15 @@ def get_my_notifications(myid, uname):
     u2 = set()
     for inv in new_deleted:
         #print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.m_name, inv.m_begin, inv.m_end, inv.m_creator_name))
+        u2.add((inv.id, inv.m_name, inv.m_begin, inv.m_end, inv.m_creator_name))
         
     u3 = set()
     for inv in new_attendance:
         print ("==="+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
-        u2.add((inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+        u2.add((inv.user.name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, inv.attendanceType))
+    for inv in deleted_attending_users_info:
+        print ("###"+str(inv.meeting.name)+str( inv.meeting.begin)+str(inv.meeting.end)+str( inv.meeting.creator.name))
+        u2.add((inv.user_name, inv.meeting.id, inv.meeting.name, inv.meeting.begin, inv.meeting.end, 6))
         
     return {'username': uname, 'new_inv': u1, 'new_deleted': u2, \
                                         'new_attendance': u3}
@@ -294,12 +298,71 @@ def ask_delete_user(request):
 
     return render(request, 'ask_sure_delete.html', {'name': uname})
 
-"""
+def ok_deleted_att_event_info(request):
+    
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+    
+    row_id = None   
+    if request.method == 'POST':
+        print ("'''''''''")
+        row_id = request.POST.get('row_id', '')
+    else:
+        print ("------------")
+        row_id = request.GET.get('row_id', '')
+    
+    info = DeletedInfo.objects.get(id = row_id)
+    
+    info.delete()
+    
+    return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
 
 def delete_user(request): # TODO
 
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
+        
+    thisUsr = User.objects.get(id=uid)
+    uname = thisUsr.name
+        
+    invited = Invitation.objects.filter(user__id = uid)  # chcemy zaktualizować info wydarzeniom na które był zaproszony
+    meetings_invited = set()
+    for inv in invited:
+        meetings_invited.add((inv.meeting, inv.reactionType))
+    
+    for meeting, reac in meetings_invited:
+        meeting.invitedNr -= 1
+        if reac == 1:
+            meeting.acceptedNr -= 1
+        meeting.save()
+        DeletedUserEventCreatorInfo.objects.create(user_name = uname, meeting = meeting)  
+         # chcemy dać info twórcom wydarzeń w których uczestniczy że usunął
+    
+    meetings_created = Meeting.objects.filter(creator__id = uid)  # chcemy dać uczestnikom jego wydarzeń info że usunięte
+    for meeting in meetings_created:
+        invitationsAttending = Invitation.objects.filter(meeting__id = meeting.id)
+        for inv in invitationsAttending:
+            DeletedInfo.objects.create(user = inv.user, m_name = meeting.name, m_begin = meeting.begin, \
+            m_end = meeting.end, m_invitedNr = meeting.invitedNr, m_acceptedNr = meeting.acceptedNr, m_creator_name = uname)
+    
+    
+    
+    thisUsr.delete()
+    
+    # trzeba go wylogować też, nie żeby coś
+    try:
+        del request.session['user_id']
+        del request.session['name']
+        del request.session['ev_us_nr']
+    except KeyError:
+        pass
+    return render(request, 'logged_out.html', {})
+    
+    return render(request, 'user_deleted.html', {'name': uname})
         
     # usuń użytkownika
     
@@ -308,7 +371,7 @@ def delete_user(request): # TODO
     # JEŚLI TO MA BYĆ W CREATORATTENDANCEINFO TO TRZEBA ZROBIĆ ŻEBY ZAMIAST UŻYTKOWNIKA W KOLUMNIE BYŁA NAZWA - ZMIENIĆ ZNÓW NIECO BAZĘ!!!
     
     # przekieruj na stronę z napisem że usunięto i przyciskiem wróć na główną
-
+"""
 
 def delete_event(request): # TODO
     

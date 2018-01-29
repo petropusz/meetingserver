@@ -1,7 +1,7 @@
 
 <h4>Usunięte spotkania, na które byłeś zaproszony: </h4>
 <div>
-    {% for s, begin, end, creator in new_deleted %}
+    {% for id, s, begin, end, creator in new_deleted %}
         <!--{% 
         try:
             s = inv.meeting.name
@@ -10,5 +10,11 @@
             creator = inv.meeting.creator.name
         %} -->
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, utworzone przez {{ creator }} </p>
+        <form action = "{{ "/ok_deleted_att_event_info" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+            <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+            <input type="submit" value = "ok" />
+            <input id="row_id" name="row_id" type="hidden" value = "{{id}}" />
+        </form>
     {% endfor %}
+    
 </div>
