@@ -40,7 +40,8 @@ urlpatterns = [
     path('delete_event', logged_views.delete_event),
     path('my_invitations', logged_views.my_invitations),
     path('ok_attendance_del', logged_views.ok_attendance_del),
-    path('ok_attendance_not_del', logged_views.ok_attendance_not_del)
+    path('ok_attendance_not_del', logged_views.ok_attendance_not_del),
+    path('change_reaction', logged_views.change_reaction)
 ]
 
 

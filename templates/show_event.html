@@ -21,6 +21,21 @@
         <input id="ev_id" name="ev_id" type="hidden" value = "{{ m_id }}" />
     </form>
     {% endif %}
+    {% if my_invited_reaction != -1 %}
+        {% for i in list_1245 %} <!-- musze przekazać [1,2,4,5], bo ktoś był terrorystą idei nie parsowania pythona w html --> 
+            {% if i != my_invited_reaction %} <!-- muszę tak brzydko bo template django na nic nie pozwala bo ktoś był jedynego 'słusznego' zdania -->
+            <form action = "{{ "/change_reaction" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+                <!-- jakby były problemy ze spacjami, to csrf_token i post -->
+                 <!-- i ==2 bez spacji już jest za trudne dla template'ów django... -->
+                <input type="submit" value = "
+                {% if i == 1 %}  Wezmę udział {% elif i == 2 %} Jestem zainteresowany {% elif i == 4 %} Nie wiem czy wezmę udział {% elif i == 5 %} Nie wezmę udziału {% endif %}
+                " />
+                <input id="ev_id" name="ev_id" type="hidden" value = "{{ m_id }}" />
+                <input id="new_reaction" name="new_reaction" type="hidden" value = "{{i}}" />
+            </form>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     <h4> Użytkownicy, którzy potwierdzili, że wezmą udział: </h4>
     {% for user_name in n_plan %}

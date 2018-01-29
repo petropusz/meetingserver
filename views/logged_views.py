@@ -266,6 +266,15 @@ def show_event(request):
     
     notif_dict = get_my_notifications(myid, uname)
     
+    my_inv_reac = -1
+    try:
+        reaction = Invitation.objects.get(user__id = myid, meeting__id = event_id)
+        my_inv_reac = reaction.reactionType
+    except:
+        pass
+    
+    print("@@@@@@"+str(my_inv_reac))
+    
     info = {'meeting_name': meeting.name,
             'meeting_creator': meeting.creator.name, 
             'meeting_begin': meeting.begin, 
@@ -278,7 +287,9 @@ def show_event(request):
             'n_ign': n_ign, 
             'n_rej': n_rej,
             'my_event': my_event,
-            'm_id': meeting.id
+            'm_id': meeting.id,
+            'my_invited_reaction': my_inv_reac,
+            'list_1245': [1,2,4,5]
             }
     
     return render(request, 'show_event.html', {**info, **notif_dict})
@@ -495,18 +506,51 @@ def ok_attendance_del(request):
     
     return HttpResponseRedirect("/me")  # daję na główną żeby się już nie bawić w ogarnianie gdzie był
 
-""" 
+ 
     
 # reakcje tylko z poziomu wyświetlonego zdarzenia    
-def change_reaction(request): #TODO 
+def change_reaction(request): 
     
-    # TODO zmienić żeby była jedna tabela zamiast Plan itd., wyszukiwania po Plan np. to teraz będą po tej, ALE
-    # Z DODATKOWYM WARUNKIEM coś w stylu reaction.type = 1   (Reactions.filter(type=1, user=...?))
+    if 'user_id' not in request.session:
+        return HttpResponseRedirect("/")
+        
+    uid = request.session['user_id']
     
-    # tu też trzeba ogarnąć zliczanie w wydarzeniu tych, którzy się zgodzili
+    reac = None   
+    ev_id = None
+    if request.method == 'POST':
+        print ("'''''''''")
+        reac = int(request.POST.get('new_reaction', ''))
+        ev_id = request.POST.get('ev_id', '')
+    else:
+        print ("------------")
+        reac = int(request.GET.get('new_reaction', ''))
+        ev_id = request.GET.get('ev_id', '')
+        
+    print ("REAC: " + str(reac))    
+        
+    try:
+        meeting = Meeting.objects.get(id=ev_id)  # na filter potem było źle, bo .coś, a except pięknie łapało...
+        reaction = Invitation.objects.get(user__id = uid, meeting__id = ev_id)  # na filter potem było źle, bo .coś, a except pięknie łapało...
+        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
+        if reac == 1:  #nowa reakcja
+            print ("ZWIĘKSZ WRESZCIE")
+            meeting.acceptedNr = meeting.acceptedNr + 1  # jak spadnie poniżej 0, to leci z bazy??
+        meeting.save()    
+        if reaction.reactionType == 1:  #stara reakcja
+            meeting.acceptedNr = meeting.acceptedNr - 1
+        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac) + " ehh: " +str(meeting.acceptedNr))
+        meeting.save()
+        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
+        reaction.reactionType = reac
+        print ("IIII"+str(reaction.reactionType)+ "  , new reaction:  "+str(reac))
+        reaction.save()
+    except:    
+        HttpResponseRedirect("/me")
     
-    # TODO jeszcze w odpowiednich miejsach wyświetlać przyciski do zmieniania reakcji
+    return HttpResponseRedirect("/me")
    
-"""
+   
+
 
     
