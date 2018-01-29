@@ -2,11 +2,12 @@
 
 {% block main_content %}
 
+<div  class="container">
     <h2> Wydarzenia, które utworzyłeś: </h2>
-
+    <ul>
     {% for id, name, creator, begin, end, nr_inv, nr_yes in my_created_events %}
         
-
+        <li>
         <h3> Spotkanie: {{ name }} </h3>
 
         wydarzenie utworzone przez: {{ creator }} <br>
@@ -21,7 +22,8 @@
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
             <input id="ev_id" name="ev_id" type="hidden" value = "{{id}}" />
         </form>
-        
+        </li>
     {% endfor %}
-
+    </ul>
+</div>
 {% endblock %}

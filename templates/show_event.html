@@ -2,8 +2,8 @@
 {% extends 'logged_shared.html' %}
 
 {% block main_content %}
-
-    <h3> Spotkanie: {{ meeting_name }} </h3>
+<div  class="container">
+    <h2> Spotkanie: {{ meeting_name }} </h2>
 
     wydarzenie utworzone przez: {{ meeting_creator }} <br>
     początek spotkania:  {{ meeting_begin }} <br>
@@ -37,30 +37,32 @@
         {% endfor %}
     {% endif %}
 
-    <h4> Użytkownicy, którzy potwierdzili, że wezmą udział: </h4>
+    <hr>
+
+    <h3> Użytkownicy, którzy potwierdzili, że wezmą udział: </h3>
     {% for user_name in n_plan %}
         {{ user_name }} <br>
     {% endfor %}
     
-    <h4> Użytkownicy, którzy są zainteresowani: </h4>
+    <h3> Użytkownicy, którzy są zainteresowani: </h3>
     {% for user_name in n_per %}
         {{ user_name }} <br>
     {% endfor %}
     
-    <h4> Użytkownicy, którzy nie zareagowali na zaproszenie: </h4>
+    <h3> Użytkownicy, którzy nie zareagowali na zaproszenie: </h3>
     {% for user_name in n_inv %}
         {{ user_name }} <br>
     {% endfor %}
     
-    <h4> Użytkownicy, którzy zignorowali zaproszenie: </h4>
+    <h3> Użytkownicy, którzy zignorowali zaproszenie: </h3>
     {% for user_name in n_ign %}
         {{ user_name }} <br>
     {% endfor %}
     
-    <h4> Zaproszeni użytkownicy, którzy nie wezmą udziału: </h4>
+    <h3> Zaproszeni użytkownicy, którzy nie wezmą udziału: </h3>
     {% for user_name in n_rej %}
         {{ user_name }} <br>
     {% endfor %}
-
+</div>
 {% endblock %}
 

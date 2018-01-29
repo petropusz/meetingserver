@@ -2,7 +2,7 @@
 {% extends 'logged_shared.html' %}
 
 {% block main_content %}
-
+<div  class="container">
     <h2>Czy na pewno chcesz usunąć konto?</h2>
 
     <form action = "/delete_user" method="get" />
@@ -15,7 +15,7 @@
         <input type="submit" value = "Anuluj" />
         
     </form>
-
+</div>
 {% endblock %}
 
 

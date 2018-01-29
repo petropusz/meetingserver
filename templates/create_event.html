@@ -2,7 +2,7 @@
 {% extends 'logged_shared.html' %}
 
 {% block main_content %}
-
+<div  class="container">
 <center>
 <form action="/create_event" method="post">
     {% csrf_token %}
@@ -33,5 +33,5 @@
     <button type="submit">Wróć na stronę główną</button>
 </form>
 </center>
-
+</div>
 {% endblock %}

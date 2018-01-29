@@ -1,6 +1,7 @@
 
 <h4>Nowe reakcje użytkowników na Twoje propozycje spotkań: </h4>
-<div>
+<div  class="container">
+    <ul>
     {% for row_id, u, id, s, begin, end, attendanceType in new_attendance %}
         <!--{% 
         try:
@@ -10,6 +11,7 @@
             u = inv.user.name
             what = inv.attendanceType
         %} -->
+        <li>
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, użytkownik {{ u }} 
         
         {% if attendanceType == 1 %} chce wziąć udział {% endif %}
@@ -37,7 +39,9 @@
             <input type="submit" value = "ok" />
             <input id="row_id" name="row_id" type="hidden" value = "{{row_id}}" />
         </form>
-        {% endif %}
         
+        {% endif %}
+        </li>
     {% endfor %}
+    </ul>
 </div>

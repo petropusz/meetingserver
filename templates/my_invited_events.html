@@ -1,12 +1,12 @@
 {% extends 'logged_shared.html' %}
 
 {% block main_content %}
-
+<div  class="container">
     <h2> Wydarzenia, na które jesteś zaproszony </h2>
-
+    <ul>
     {% for id, name, creator, begin, end, nr_inv, nr_yes, reactionType in my_invited_events %}
         
-
+        <li>
         <h3> Spotkanie: {{ name }} </h3>
         <h4> Twoja reakcja: 
         {% if reactionType == 1 %} chcę wziąć udział {% endif %}
@@ -28,7 +28,8 @@
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
             <input id="ev_id" name="ev_id" type="hidden" value = "{{id}}" />
         </form>
-        
+        </li>
     {% endfor %}
-
+    </ul>
+</div>
 {% endblock %}
