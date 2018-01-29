@@ -68,6 +68,9 @@ def create_event(request):
     if 'ev_us_nr' not in request.session:
         request.session['ev_us_nr']=1    
         
+    uid = request.session['user_id'] 
+    uname = request.session['user_name']   
+        
     if request.method == 'POST':
         form = NewEventForm(request.POST)
         form.ensure_user_field_nr(request.session['ev_us_nr'])
@@ -88,7 +91,9 @@ def create_event(request):
         form = NewEventForm() 
         request.session['ev_us_nr']=1  # jak get, to nowy, więc dajemy 1
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-    return render(request, 'create_event.html', {'form': form})
+    notif_dict = get_my_notifications(uid, uname)
+    d1 = {'form': form}
+    return render(request, 'create_event.html', {**notif_dict, **d1})
     
 def add_user_field(request):
     """obsługa polecenia dodania pola na zaproszonego użytkownika w formularzu
@@ -505,14 +510,18 @@ def show_users(request):
         return HttpResponseRedirect("/")
         
     uid = request.session['user_id']
+    uname = request.session['user_name']
     
     usrs = User.objects.all()
     
     u1 = set()
     for u in usrs:
         u1.add((u.name))
+        
+    notif_dict = get_my_notifications(uid, uname)
+    d1 = {'usrs': u1}   
     
-    return render(request, 'all_users.html', {'usrs': u1})
+    return render(request, 'all_users.html', {**notif_dict, **d1})
     
     
     
