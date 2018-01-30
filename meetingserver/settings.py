@@ -61,7 +61,8 @@ ROOT_URLCONF = 'meetingserver.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')], # PROJECT_ROOT to by było /meetingserver/meetingserver
+        # PROJECT_ROOT to by było /meetingserver/meetingserver
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'pl-PL'# żeby błędy po polsku np. jak zły czas     'en-us'
+LANGUAGE_CODE = 'pl-PL'  # żeby błędy po polsku np. jak zły czas     'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
@@ -114,7 +115,8 @@ USE_TZ = True
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
-DATABASES['default']['ATOMIC_REQUESTS'] = True  # osobna transakcja na każde żądanie, żeby się nie bawić w blokady itp
+# osobna transakcja na każde żądanie, żeby się nie bawić w blokady itp
+DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

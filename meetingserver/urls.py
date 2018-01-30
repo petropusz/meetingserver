@@ -37,7 +37,7 @@ urlpatterns = [
     path('show_event', logged_views.show_event),
     path('my_created_events', logged_views.my_created_events),
     path('ask_delete_user', logged_views.ask_delete_user),
-    path('delete_user', logged_views.delete_user),    
+    path('delete_user', logged_views.delete_user),
     path('ok_deleted_att_event_info', logged_views.ok_deleted_att_event_info),
     path('delete_event', logged_views.delete_event),
     path('my_invitations', logged_views.my_invitations),
@@ -46,5 +46,3 @@ urlpatterns = [
     path('change_reaction', logged_views.change_reaction),
     path('show_users', logged_views.show_users)
 ]
-
-
