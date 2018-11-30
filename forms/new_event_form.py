@@ -14,7 +14,6 @@ from django import forms
 from meetingserver.models import User
 from meetingserver.models import Meeting
 from meetingserver.models import InviteInfo
-#from meetingserver.models import Plan
 from meetingserver.models import Invitation
 from django.db import transaction
 from datetime import datetime
@@ -123,8 +122,7 @@ class NewEventForm(forms.Form):
     # każde żądanie jest transakcją, dekorator został z kiedy tylko to było
     def create_event(self, myuId, uNr):
         """dodaj potrzebne rekordy w bazie danych - utwórz wydarzenie"""
-        # to nie może łapać wyjątku w środku jak z dekoratorem, musi być łapany
-        # na zewnątrz
+        # to nie może łapać wyjątku w środku jak z dekoratorem, musi być łapany na zewnątrz
         name1 = self.cleaned_data['name']
         begin1 = self.cleaned_data['begin']
         end1 = self.cleaned_data['end']

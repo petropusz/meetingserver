@@ -5,13 +5,6 @@
 <div  class="container">
     <ul>
     {% for id, s, begin, end, creator in new_inv %}
-        <!--{% 
-        try:
-            s = inv.meeting.name
-            begin = inv.meeting.begin
-            end = inv.meeting.end
-            creator = inv.meeting.creator.name
-        %}-->
         <li>
         <p> Spotkanie: {{ s }}, od: {{ begin }} do: {{ end }}, utworzone przez {{ creator }} </p>
         <form action = "{{ "/show_event" }}" method="get" />

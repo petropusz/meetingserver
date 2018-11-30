@@ -48,7 +48,6 @@ def sign_up(request):
         if form.is_valid():
             # do sprawdzania czy zalogowany
             request.session['user_id'] = form.cleaned_data['id']
-            # request.POST['name']
             request.session['user_name'] = form.cleaned_data['name']
             return HttpResponseRedirect("/me")
     else:

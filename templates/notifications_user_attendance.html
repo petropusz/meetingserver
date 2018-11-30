@@ -16,19 +16,22 @@
         {% if attendanceType == 6 %} usunął konto {% endif %}
         
         </p>
-        <form action = "{{ "/show_event" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+        <form action = "{{ "/show_event" }}" method="get" />  
+            <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
             <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "Wyświetl wydarzenie {{s}}" />
             <input id="ev_id" name="ev_id" type="hidden" value = "{{id}}" />
         </form>
         {% if attendanceType != 6 %}
-        <form action = "{{ "/ok_attendance_not_del" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+        <form action = "{{ "/ok_attendance_not_del" }}" method="get" />  
+            <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
             <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "ok" />
             <input id="row_id" name="row_id" type="hidden" value = "{{row_id}}" />
         </form>
         {% else %}
-        <form action = "{{ "/ok_attendance_del" }}" method="get" />  <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
+        <form action = "{{ "/ok_attendance_del" }}" method="get" />  
+            <!-- z querystring kodowanie i odkodowywanie to jakiś koszmar, to powinno być robione automatycznie... -->
             <!-- jakby były problemy ze spacjami, to csrf_token i post -->
             <input type="submit" value = "ok" />
             <input id="row_id" name="row_id" type="hidden" value = "{{row_id}}" />

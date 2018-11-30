@@ -22,13 +22,11 @@ from django.views.decorators.csrf import csrf_protect
 
 def get_my_notifications(myid, uname):
     """wydostań z bazy moje powiadomienia"""
-    new_invite = InviteInfo.objects.filter(
-        user__id=myid)   # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
+    new_invite = InviteInfo.objects.filter(user__id=myid)   
+    # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     new_deleted = DeletedInfo.objects.filter(user__id=myid)
-    new_attendance = CreatorAttendanceInfo.objects.filter(
-        meeting__creator__id=myid)
-    deleted_attending_users_info = DeletedUserEventCreatorInfo.objects.filter(
-        meeting__creator__id=myid)
+    new_attendance = CreatorAttendanceInfo.objects.filter(meeting__creator__id=myid)
+    deleted_attending_users_info = DeletedUserEventCreatorInfo.objects.filter(meeting__creator__id=myid)
 
     u1 = set()
     for inv in new_invite:
@@ -98,7 +96,8 @@ def create_event(request):
     if request.method == 'POST':
         form = NewEventForm(request.POST)
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-        if form.is_valid():  # nic nie robi (albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        if form.is_valid():  # nic nie robi (albo może jednak sprawdza format wartości?), 
+                             # potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę
                              # podać parametr a clean chyba nie
 
@@ -113,8 +112,6 @@ def create_event(request):
                 except BaseException:
                     form.checkClean(request.session['ev_us_nr'])
                     return render(request, 'create_event.html', {'form': form})
-                # TODO strona wydarzenia którą zwraca zaakceptowany formularz
-                # jako swoje cleaned_data
                 return HttpResponseRedirect("/me")
     else:
         form = NewEventForm()
@@ -183,18 +180,17 @@ def find_gap_in_plans(request):
     if request.method == 'POST':
         # musi być .copy, żeby .data było mutable!!!
         form = NewEventForm(request.POST.copy())
-        # TO MA ZNACZENIE NA GOTOWYM FORMULARZU, BO FORMULARZ NIBY MA POLA,
+        # to ma znaczenie na gotowym formularzu, bo formularz niby ma pola,
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-        # ALE OBIEKT Z KONSTRUKTORA NewEventForm(request.POST) BEZ TEGO ICH NIE
-        # MA !!!
-        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        # ale obiekt z konstruktora NewEventForm(request.POST) bez tego ich nie ma!
+        
+        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?),
+                             # potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę podać parametr a clean chyba nie
-            # !!  jak użytkownik sobie usunie pola w html'u to się może wywalić,
-            # ale raczej nie chcemy się bawić w sprawdzanie czy sam sobie nie
-            # szkodzi
+            # jak użytkownik sobie usunie pola w html'u to się może wywalić,
+            # ale raczej nie chcemy się bawić w sprawdzanie czy sam sobie nie szkodzi
 
-            # w sumie nieważne jakie res, i tak zwracamy zmieniony formularz (z
-            # błędami lub bez)
+            # w sumie nieważne jakie res, i tak zwracamy zmieniony formularz (z błędami lub bez)
             res = form.find_gap_plan(request.session['ev_us_nr'])
     else:
         form = NewEventForm()
@@ -216,12 +212,12 @@ def find_gap_in_invs(request):
         # musi być .copy, żeby .data było mutable!!!
         form = NewEventForm(request.POST.copy())
         form.ensure_user_field_nr(request.session['ev_us_nr'])
-        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?), potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
+        if form.is_valid():  # nic nie robi(albo może jednak sprawdza format wartości?), 
+                             # potrzebuję żeby mieć cleaned_data wygodnie do modyfikowania w obiekcie formularza
                              # w prawdziwej funkcji walidującej której mogę
                              # podać parametr a clean chyba nie
 
-            # jak zwrócę nowy formularz z wypelnionymi to stracę stare
-            # wartości...
+            # jak zwrócę nowy formularz z wypelnionymi to stracę stare wartości...
             res = form.find_gap_inv(request.session['ev_us_nr'])
     else:
         form = NewEventForm()
@@ -260,9 +256,7 @@ def show_event(request):
     notif = InviteInfo.objects.filter(user__id=uid, meeting_id=meeting.id)
     notif.delete()
 
-    # meeting = Meeting.objects.filter(id=event_id)   # ten queryset ma pod
-    # .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter
-    # trzeba __ zamiast .
+    # ten queryset ma pod .user dostępną krotkę z tabeli user z którą się łączy!!!; ale w filter trzeba __ zamiast .
     i_plan = Invitation.objects.filter(meeting__id=event_id, reactionType=1)
     n_plan = set()
     for u in i_plan:
@@ -383,7 +377,7 @@ def ok_deleted_att_event_info(request):
     return HttpResponseRedirect("/me")
 
 
-def delete_user(request):  # TODO
+def delete_user(request): 
     """usuń użytkownika"""
     if 'user_id' not in request.session:
         return HttpResponseRedirect("/")
@@ -431,8 +425,6 @@ def delete_user(request):  # TODO
         del request.session['ev_us_nr']
     except KeyError:
         pass
-    return render(request, 'logged_out.html', {})
-
     return render(request, 'user_deleted.html', {'name': uname})
 
 
