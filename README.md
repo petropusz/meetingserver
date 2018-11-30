@@ -3,7 +3,7 @@
 
 Python, Django.
 
-Comments in the code are in Polish (but variable names are ofter self-explanatory).
+Comments in the code are in Polish (but the code is in English, usually self-explanatory).
 
 The application runs at meetingserver.herokuapp.com (Polish).
 
